@@ -19,6 +19,7 @@ import ReportsPage from './pages/ReportsPage';
 import NurseryPage from './pages/NurseryPage';
 import InventoryPage from './pages/InventoryPage';
 import SettingsPage from './pages/SettingsPage';
+import SubscriptionPage from './pages/SubscriptionPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { PLATFORM } from './data/mockData';
 
@@ -159,6 +160,7 @@ function PageContent({ page }: { page: string }) {
     case 'nursery':       return <NurseryPage />;
     case 'inventory':     return <InventoryPage />;
     case 'settings':      return <SettingsPage />;
+    case 'subscription':  return <SubscriptionPage />;
     default: {
       const p = PLACEHOLDERS[page];
       return p

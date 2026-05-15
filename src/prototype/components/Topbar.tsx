@@ -20,6 +20,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
   nursery:       { title: 'إدارة الشتلات',              sub: 'دفعات الشتلات ونسب الإنبات وجداول النقل' },
   inventory:     { title: 'المخزون',                    sub: 'إدارة البذور والأسمدة والمبيدات وجميع المستلزمات' },
   settings:      { title: 'الإعدادات',                  sub: 'إعدادات المنصة والمستخدمين والصلاحيات' },
+  subscription:  { title: 'الاشتراك والباقات',          sub: 'إدارة خطة الاشتراك والاستخدام والفواتير' },
 };
 
 interface Props {

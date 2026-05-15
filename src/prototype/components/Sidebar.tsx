@@ -37,7 +37,8 @@ const NAV: NavItem[] = [
   { id: 'nursery',       label: 'الشتلات',                     icon: '🌱',  live: true                              },
   { id: 'inventory',     label: 'المخزون',                     icon: '📦',  live: true                              },
   // ─── النظام
-  { id: 'settings',      label: 'الإعدادات',                   icon: '⚙️',  live: true,  group: 'النظام'            },
+  { id: 'subscription',  label: 'الاشتراك والباقات',           icon: '💳',  live: true,  group: 'النظام'            },
+  { id: 'settings',      label: 'الإعدادات',                   icon: '⚙️',  live: true                              },
 ];
 
 interface Props {

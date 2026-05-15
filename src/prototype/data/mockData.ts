@@ -964,3 +964,179 @@ export const notificationSettings = [
   { id: 'expense_overrun', label: 'تجاوز الميزانية',            enabled: false, channel: 'بريد' },
   { id: 'worker_absence',  label: 'تنبيه غياب العمال',          enabled: false, channel: 'تطبيق' },
 ];
+
+// ─── Subscription Plans ──────────────────────────────────
+
+export type PlanId = 'starter' | 'professional' | 'company' | 'enterprise';
+
+export interface SubscriptionPlan {
+  id: PlanId;
+  name: string;
+  tagline: string;
+  price: number | null;
+  color: string;
+  accentClass: string;
+  badge?: string;
+  limits: {
+    farms: number | null;
+    users: number | null;
+    fields: number | null;
+    greenhouses: number | null;
+    activeCycles: number | null;
+    aiReports: number | null;
+  };
+  features: string[];
+  lockedModules?: string[];
+}
+
+export const subscriptionPlans: SubscriptionPlan[] = [
+  {
+    id: 'starter',
+    name: 'باقة البداية السنوية',
+    tagline: 'للمزارع الصغيرة',
+    price: 1500,
+    color: '#16a34a',
+    accentClass: 'green',
+    limits: { farms: 1, users: 3, fields: 5, greenhouses: 5, activeCycles: 10, aiReports: 2 },
+    features: [
+      'إدارة المزرعة الأساسية',
+      'المزروعات والأصناف',
+      'الدورات الزراعية',
+      'إدارة الري',
+      'التسميد',
+      'سجلات الأمراض والآفات',
+      'الحصاد',
+      'المبيعات',
+      'المصروفات الأساسية',
+      'التحليل الداخلي الأساسي',
+      'التقارير الأساسية',
+    ],
+    lockedModules: ['المخزون', 'إدارة العمال', 'محطة التحلية', 'مقارنة المزارع', 'لوحات متعددة المزارع'],
+  },
+  {
+    id: 'professional',
+    name: 'الباقة الاحترافية السنوية',
+    tagline: 'للمزارع المتوسطة',
+    price: 4800,
+    color: '#0284c7',
+    accentClass: 'sky',
+    badge: 'الأكثر شيوعاً',
+    limits: { farms: 3, users: 10, fields: 20, greenhouses: 30, activeCycles: 50, aiReports: 10 },
+    features: [
+      'كل مميزات باقة البداية',
+      'إدارة المخزون',
+      'العمال والمهام',
+      'الري ومصادر المياه المتقدمة',
+      'محطة التحلية المبسطة',
+      'الكهرباء وتشغيل البيوت المحمية',
+      'تقارير الربحية المتقدمة',
+      'تصدير PDF / Excel',
+      '10 تقارير ذكاء اصطناعي سنوياً',
+    ],
+    lockedModules: ['لوحات متعددة المزارع', 'مقارنة المزارع المتقدمة', 'شعار مخصص في التقارير'],
+  },
+  {
+    id: 'company',
+    name: 'باقة الشركات السنوية',
+    tagline: 'للشركات الزراعية',
+    price: 12000,
+    color: '#7c3aed',
+    accentClass: 'purple',
+    limits: { farms: 10, users: 30, fields: 100, greenhouses: 150, activeCycles: 250, aiReports: 40 },
+    features: [
+      'كل مميزات الباقة الاحترافية',
+      'لوحات تحكم متعددة المزارع',
+      'صلاحيات متقدمة',
+      'مقارنة المواسم والمزارع',
+      'تقارير مالية وتشغيلية متقدمة',
+      'شعار مخصص في التقارير',
+      'دعم أولوية مع مدير حساب',
+      '40 تقرير ذكاء اصطناعي سنوياً',
+    ],
+  },
+  {
+    id: 'enterprise',
+    name: 'باقة المؤسسات السنوية',
+    tagline: 'للمؤسسات الكبرى',
+    price: null,
+    color: '#d97706',
+    accentClass: 'amber',
+    badge: 'مخصصة',
+    limits: { farms: null, users: null, fields: null, greenhouses: null, activeCycles: null, aiReports: null },
+    features: [
+      'كل مميزات باقة الشركات',
+      'حدود مخصصة حسب الاتفاقية',
+      'صلاحيات مخصصة بالكامل',
+      'دعم مخصص ومدير حساب مخصص',
+      'تأهيل وتدريب للفريق',
+      'تقارير مخصصة حسب الطلب',
+      'تكاملات مستقبلية مع أنظمة الجهات',
+      'تقارير ذكاء اصطناعي غير محدودة',
+    ],
+  },
+];
+
+// ─── Current Subscription ───────────────────────────────
+
+export const currentSubscription = {
+  planId:       'professional' as PlanId,
+  planName:     'الباقة الاحترافية السنوية',
+  status:       'active' as 'active' | 'expired' | 'suspended' | 'trial',
+  startDate:    '2026-01-15',
+  endDate:      '2027-01-14',
+  daysRemaining: 244,
+  autoRenew:    true,
+  billingCycle: 'سنوي',
+  paidAmount:   4800,
+  usage: {
+    farms:         2,
+    users:         7,
+    fields:        14,
+    greenhouses:   22,
+    activeCycles:  38,
+    aiReports:     6,
+    aiReportsAddon: 5,
+  },
+};
+
+// ─── Subscription Invoices ──────────────────────────────
+
+export const subscriptionInvoices = [
+  { id: 'INV-2026-001', date: '2026-01-15', plan: 'الباقة الاحترافية السنوية', amount: 4800, status: 'مدفوعة',  method: 'بطاقة ائتمان' },
+  { id: 'INV-2025-004', date: '2025-10-02', plan: 'إضافة 5 تقارير ذكاء اصطناعي', amount: 250, status: 'مدفوعة', method: 'بطاقة ائتمان' },
+  { id: 'INV-2025-001', date: '2025-01-15', plan: 'الباقة الاحترافية السنوية', amount: 4500, status: 'مدفوعة',  method: 'تحويل بنكي'  },
+  { id: 'INV-2024-003', date: '2024-06-01', plan: 'إضافة 10 تقارير ذكاء اصطناعي', amount: 480, status: 'مدفوعة', method: 'بطاقة ائتمان' },
+  { id: 'INV-2024-001', date: '2024-01-15', plan: 'باقة البداية السنوية',       amount: 1200, status: 'مدفوعة',  method: 'تحويل بنكي'  },
+];
+
+// ─── AI Report Add-ons ──────────────────────────────────
+
+export const aiReportAddOns = [
+  { id: 'ai5',   label: '5 تقارير إضافية',   reports: 5,   price: 250,  popular: false },
+  { id: 'ai10',  label: '10 تقارير إضافية',  reports: 10,  price: 450,  popular: true  },
+  { id: 'ai25',  label: '25 تقارير إضافية',  reports: 25,  price: 950,  popular: false },
+  { id: 'ai50',  label: '50 تقارير إضافية',  reports: 50,  price: 1600, popular: false },
+];
+
+// ─── Module Access Map ──────────────────────────────────
+
+export const moduleAccessMap: Record<PlanId, string[]> = {
+  starter: [
+    'لوحة التحكم', 'المزارع والحقول', 'المزروعات', 'الدورات الزراعية',
+    'العمليات الزراعية', 'الحصاد', 'التسميد', 'الأمراض والآفات',
+    'الري', 'المبيعات', 'المصروفات', 'التحليل الأساسي', 'التقارير الأساسية',
+  ],
+  professional: [
+    'لوحة التحكم', 'المزارع والحقول', 'المزروعات', 'الدورات الزراعية',
+    'العمليات الزراعية', 'الحصاد', 'التسميد', 'الأمراض والآفات',
+    'الري ومصادر المياه', 'الزراعة المحمية المكيفة', 'المبيعات',
+    'المصروفات', 'المحاسبة', 'المخزون', 'إدارة العمال',
+    'التحليل الذكي', 'التقارير المتقدمة', 'الشتلات',
+  ],
+  company: [
+    'كل وحدات الباقة الاحترافية',
+    'لوحات متعددة المزارع', 'مقارنة المزارع', 'الصلاحيات المتقدمة',
+    'شعار مخصص في التقارير', 'تقارير مالية وتشغيلية متقدمة',
+  ],
+  enterprise: ['وصول كامل غير محدود مع تخصيص كامل'],
+};
