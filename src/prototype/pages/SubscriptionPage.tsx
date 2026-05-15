@@ -186,7 +186,7 @@ export default function SubscriptionPage() {
         {/* Grace / Suspended info */}
         {currentSubscription.status === 'expired' && (
           <div className="relative z-10 mt-4 bg-amber-500/30 border border-amber-300/40 rounded-xl p-3 text-sm font-semibold">
-            ⚠️ الاشتراك منتهٍ — المنصة في وضع القراءة فقط لمدة 15 يوماً، ثم ستُوقف الخدمة حتى التجديد.
+            ⚠️ الاشتراك منتهٍ — حسابك في وضع القراءة فقط لمدة 15 يوماً. بعدها يُعلَّق الحساب مؤقتاً وتبقى بياناتك محفوظة حتى التجديد.
           </div>
         )}
       </div>
@@ -606,10 +606,10 @@ export default function SubscriptionPage() {
           <GlassCard title="سياسة انتهاء الاشتراك" subtitle="ماذا يحدث عند انتهاء الاشتراك؟" accent="red">
             <div className="space-y-3">
               {[
-                { day: 'يوم الانتهاء',          icon: '📅', color: 'text-amber-700 bg-amber-50 border-amber-100', desc: 'يصبح الحساب في وضع القراءة فقط — يمكن الاطلاع على جميع البيانات دون إضافة أو تعديل.' },
-                { day: '+15 يوم (مهلة الإنقاذ)', icon: '⚠️', color: 'text-red-700 bg-red-50 border-red-100',     desc: 'إذا لم يتم التجديد خلال 15 يوماً يُوقف الحساب مؤقتاً — البيانات محفوظة ولكن لا يمكن الوصول.' },
-                { day: '+90 يوم',                icon: '🗄️', color: 'text-gray-700 bg-gray-50 border-gray-100',  desc: 'قبل حذف البيانات نهائياً تُرسل إشعارات متعددة. يمكن طلب نسخة احتياطية في أي وقت خلال هذه الفترة.' },
-                { day: 'التجديد في أي وقت',      icon: '✅', color: 'text-green-700 bg-green-50 border-green-100', desc: 'عند التجديد يعود الحساب فوراً لوضع النشاط الكامل مع جميع البيانات السابقة.' },
+                { day: 'عند انتهاء الاشتراك',     icon: '📅', color: 'text-amber-700 bg-amber-50 border-amber-100', desc: 'يتحول الحساب إلى وضع القراءة فقط لمدة 15 يوماً — يمكن الاطلاع على جميع البيانات دون إضافة أو تعديل.' },
+                { day: 'بعد فترة السماح',          icon: '⏸️', color: 'text-red-700 bg-red-50 border-red-100',     desc: 'يتم تعليق الحساب مؤقتاً حتى تجديد الاشتراك. تبقى البيانات محفوظة وفق سياسة الاحتفاظ بالبيانات.' },
+                { day: 'ضمان حفظ البيانات',        icon: '🔐', color: 'text-gray-700 bg-gray-50 border-gray-100',  desc: 'لا يتم التصرف في البيانات إلا وفق الشروط والأحكام وبعد إشعارات مسبقة كافية عبر البريد الإلكتروني والجوال.' },
+                { day: 'استعادة الوصول الكامل',    icon: '✅', color: 'text-green-700 bg-green-50 border-green-100', desc: 'يعود الحساب فوراً لوضع النشاط الكامل مع جميع البيانات السابقة بمجرد تجديد الاشتراك في أي وقت.' },
               ].map((item) => (
                 <div key={item.day} className={`flex items-start gap-4 p-4 rounded-xl border ${item.color}`}>
                   <span className="text-2xl flex-shrink-0">{item.icon}</span>
@@ -619,6 +619,12 @@ export default function SubscriptionPage() {
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-100 flex items-start gap-3">
+              <span className="text-lg flex-shrink-0">💡</span>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                تهدف هذه السياسة إلى حماية بيانات العميل ومنحه فرصة كافية للتجديد دون فقدان بياناته.
+              </p>
             </div>
           </GlassCard>
         </div>
