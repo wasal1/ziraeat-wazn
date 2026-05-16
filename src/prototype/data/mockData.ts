@@ -1522,3 +1522,147 @@ export const taskAttachments = [
   { id: 2, type: 'after',     label: 'الأوراق بعد الرش',      filename: 'after_spray_beit7.jpg',   uploadedBy: 'العامل يوسف', time: '18:10', size: '2.1 MB', emoji: '🌿' },
   { id: 3, type: 'equipment', label: 'صورة المبيد المستخدم',  filename: 'myclobutanil_bottle.jpg', uploadedBy: 'العامل يوسف', time: '18:10', size: '1.8 MB', emoji: '🧴' },
 ];
+
+// ════════════════════════════════════════════════════════
+// وحدة عملي اليوم — الأدوار والمهام اليومية
+// ════════════════════════════════════════════════════════
+
+export const myTodayRoles = [
+  { id: 'owner',      label: 'المالك',           icon: '👑', accent: 'from-amber-500 to-orange-600'  },
+  { id: 'manager',    label: 'مدير المزرعة',     icon: '🏭', accent: 'from-green-600 to-emerald-700' },
+  { id: 'engineer',   label: 'المهندس الزراعي',  icon: '🔬', accent: 'from-blue-500 to-indigo-600'   },
+  { id: 'supervisor', label: 'المشرف الميداني',  icon: '👷', accent: 'from-sky-500 to-blue-600'      },
+  { id: 'worker',     label: 'العامل',           icon: '🌿', accent: 'from-teal-500 to-green-600'    },
+  { id: 'technician', label: 'فني التشغيل',      icon: '⚙️', accent: 'from-gray-600 to-slate-700'    },
+  { id: 'warehouse',  label: 'أمين المستودع',    icon: '📦', accent: 'from-purple-500 to-violet-600' },
+  { id: 'accountant', label: 'المحاسب',          icon: '💰', accent: 'from-rose-500 to-red-600'      },
+] as const;
+
+export type MyTodayRoleId = typeof myTodayRoles[number]['id'];
+
+export const fullStatusConfig: Record<string, { label: string; style: string; dot: string; icon: string }> = {
+  scheduled:         { label: 'مجدولة',                    style: 'bg-gray-100 text-gray-600',      dot: 'bg-gray-400',   icon: '🗓️' },
+  assigned:          { label: 'مُسندة',                    style: 'bg-blue-50 text-blue-700',        dot: 'bg-blue-400',   icon: '👤' },
+  mustDoNow:         { label: 'يجب تنفيذها الآن',          style: 'bg-red-100 text-red-700',         dot: 'bg-red-500',    icon: '🚨' },
+  inProgress:        { label: 'قيد التنفيذ',               style: 'bg-sky-100 text-sky-700',         dot: 'bg-sky-500',    icon: '⏳' },
+  waitingPhoto:      { label: 'بانتظار صورة',              style: 'bg-orange-100 text-orange-700',   dot: 'bg-orange-400', icon: '📷' },
+  waitingSupervisor: { label: 'بانتظار مراجعة المشرف',     style: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500',  icon: '👷' },
+  waitingEngineer:   { label: 'بانتظار مراجعة المهندس',    style: 'bg-violet-100 text-violet-700',   dot: 'bg-violet-500', icon: '🔬' },
+  waitingManager:    { label: 'بانتظار اعتماد المدير',     style: 'bg-purple-100 text-purple-700',   dot: 'bg-purple-500', icon: '✅' },
+  waitingWarehouse:  { label: 'بانتظار صرف من المستودع',   style: 'bg-teal-100 text-teal-700',       dot: 'bg-teal-500',   icon: '📦' },
+  waitingFinance:    { label: 'بانتظار اعتماد مالي',       style: 'bg-pink-100 text-pink-700',       dot: 'bg-pink-500',   icon: '💰' },
+  completed:         { label: 'مكتملة',                    style: 'bg-green-100 text-green-700',     dot: 'bg-green-500',  icon: '✅' },
+  late:              { label: 'متأخرة',                    style: 'bg-red-50 text-red-700',          dot: 'bg-red-600',    icon: '⏰' },
+  rejected:          { label: 'مرفوضة',                    style: 'bg-red-50 text-red-600',          dot: 'bg-red-400',    icon: '❌' },
+  cancelled:         { label: 'ملغاة',                     style: 'bg-gray-50 text-gray-500',        dot: 'bg-gray-300',   icon: '🚫' },
+};
+
+export interface MyTask {
+  id: number;
+  title: string;
+  type: string;
+  status: string;
+  priority: 'high' | 'medium' | 'low';
+  farm: string;
+  field: string;
+  scheduledTime: string;
+  dueTime?: string;
+  assignedTo: string;
+  myRole?: string;
+  waitingAction?: string;
+  estimatedCost?: number;
+  notes?: string;
+}
+
+export const myTodayData: Record<MyTodayRoleId, {
+  summary: { total: number; done: number; urgent: number; late: number; waiting: number };
+  tasks: MyTask[];
+}> = {
+  owner: {
+    summary: { total: 24, done: 9, urgent: 3, late: 2, waiting: 2 },
+    tasks: [
+      { id: 11, title: 'عطل مضخة الري الرئيسية — محطة الضخ',     type: 'breakdown_report',  status: 'inProgress',     priority: 'high',   farm: 'مزرعة النخيل', field: 'محطة الضخ',         scheduledTime: '08:30', assignedTo: 'فني خالد',       estimatedCost: 850,   notes: 'يؤثر على ري 4 بيوت محمية' },
+      { id: 12, title: 'رش وقائي متأخر — بيت محمي رقم 3',        type: 'spraying',          status: 'late',           priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 3',        scheduledTime: '07:00', dueTime: '08:00', assignedTo: 'المشرف سالم', estimatedCost: 180 },
+      { id: 13, title: 'اعتماد مشتريات أسمدة — دورة الخيار',     type: 'purchase',          status: 'waitingFinance', priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب',             scheduledTime: '10:00', assignedTo: 'المهندس أحمد',   waitingAction: 'اعتمادك المالي مطلوب', estimatedCost: 1200 },
+      { id: 14, title: 'تقرير ربحية شهر مايو',                    type: 'report',            status: 'waitingManager', priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب',             scheduledTime: '12:00', assignedTo: 'المهندس أحمد' },
+      { id: 15, title: 'ري البيت المحمي رقم 7',                   type: 'irrigation',        status: 'completed',      priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 7',        scheduledTime: '09:00', assignedTo: 'العامل يوسف',    estimatedCost: 45 },
+      { id: 16, title: 'فحص حساسات الرطوبة — بيت 12',            type: 'sensor_check',      status: 'completed',      priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 12',       scheduledTime: '08:00', assignedTo: 'فني خالد' },
+      { id: 17, title: 'صرف مبيد للرش الوقائي',                   type: 'material_dispatch', status: 'waitingWarehouse',priority: 'medium', farm: 'مزرعة النخيل', field: 'المستودع',          scheduledTime: '11:00', assignedTo: 'أمين محمد',      estimatedCost: 320 },
+    ],
+  },
+  manager: {
+    summary: { total: 24, done: 9, urgent: 3, late: 2, waiting: 4 },
+    tasks: [
+      { id: 21, title: 'ري البيت المحمي رقم 7',                   type: 'irrigation',        status: 'completed',      priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 7',        scheduledTime: '09:00', assignedTo: 'العامل يوسف',    estimatedCost: 45 },
+      { id: 22, title: 'عطل مضخة الري الرئيسية',                  type: 'breakdown_report',  status: 'inProgress',     priority: 'high',   farm: 'مزرعة النخيل', field: 'محطة الضخ',         scheduledTime: '08:30', assignedTo: 'فني خالد',       estimatedCost: 850 },
+      { id: 23, title: 'رش وقائي متأخر — بيت 3',                  type: 'spraying',          status: 'late',           priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 3',        scheduledTime: '07:00', dueTime: '08:00', assignedTo: 'المشرف سالم', estimatedCost: 180 },
+      { id: 24, title: 'اعتماد مشتريات أسمدة',                    type: 'purchase',          status: 'waitingManager', priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب',             scheduledTime: '10:00', assignedTo: 'المهندس أحمد',   waitingAction: 'اعتمادك مطلوب الآن', estimatedCost: 1200 },
+      { id: 25, title: 'تسميد الخيار — الدورة الثالثة',           type: 'fertilization',     status: 'scheduled',      priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 1',        scheduledTime: '14:00', assignedTo: 'المهندس أحمد',   estimatedCost: 380 },
+      { id: 26, title: 'فحص حساسات الرطوبة — بيت 12',            type: 'sensor_check',      status: 'completed',      priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 12',       scheduledTime: '08:00', assignedTo: 'فني خالد' },
+      { id: 27, title: 'صرف مبيد للرش الوقائي',                   type: 'material_dispatch', status: 'waitingWarehouse',priority: 'medium', farm: 'مزرعة النخيل', field: 'المستودع',          scheduledTime: '11:00', assignedTo: 'أمين محمد',      estimatedCost: 320 },
+      { id: 28, title: 'متابعة نمو — بيت محمي 5',                 type: 'growth_monitoring', status: 'assigned',       priority: 'low',    farm: 'مزرعة النخيل', field: 'بيت محمي 5',        scheduledTime: '13:00', assignedTo: 'المهندس أحمد' },
+      { id: 29, title: 'تقرير ربحية شهر مايو',                    type: 'report',            status: 'inProgress',     priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب',             scheduledTime: '12:00', assignedTo: 'المهندس أحمد' },
+    ],
+  },
+  engineer: {
+    summary: { total: 8, done: 2, urgent: 2, late: 0, waiting: 1 },
+    tasks: [
+      { id: 31, title: 'ري البيت المحمي رقم 7',                   type: 'irrigation',       status: 'completed',      priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 7',        scheduledTime: '09:00', assignedTo: 'العامل يوسف',  myRole: 'إصدار أمر الري والإشراف',    estimatedCost: 45 },
+      { id: 32, title: 'تسميد الخيار — الدورة الثالثة',           type: 'fertilization',    status: 'scheduled',      priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 1',        scheduledTime: '14:00', assignedTo: 'العامل عمر',   myRole: 'إصدار برنامج التسميد',       estimatedCost: 380 },
+      { id: 33, title: 'مراجعة فنية رش بيت محمي 3',               type: 'spraying',         status: 'waitingEngineer',priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 3',        scheduledTime: '09:30', assignedTo: 'العامل سعد',   myRole: 'مراجعة فنية', waitingAction: 'مراجعتك الفنية مطلوبة الآن' },
+      { id: 34, title: 'متابعة نمو — بيت محمي 5',                 type: 'growth_monitoring',status: 'assigned',       priority: 'low',    farm: 'مزرعة النخيل', field: 'بيت محمي 5',        scheduledTime: '13:00', assignedTo: 'المهندس أحمد', myRole: 'متابعة وتوثيق' },
+      { id: 35, title: 'فحص جودة مياه التحلية',                   type: 'sensor_check',     status: 'mustDoNow',      priority: 'high',   farm: 'مزرعة النخيل', field: 'محطة التحلية',       scheduledTime: '11:00', assignedTo: 'المهندس أحمد', myRole: 'منفذ', waitingAction: 'مطلوب منك تنفيذها الآن' },
+      { id: 36, title: 'إعداد طلب شراء أسمدة',                    type: 'purchase',         status: 'inProgress',     priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب',             scheduledTime: '10:00', assignedTo: 'المهندس أحمد', myRole: 'إعداد طلب الشراء',           estimatedCost: 1200 },
+    ],
+  },
+  supervisor: {
+    summary: { total: 12, done: 4, urgent: 1, late: 1, waiting: 2 },
+    tasks: [
+      { id: 41, title: 'ري البيت المحمي رقم 7',                   type: 'irrigation',       status: 'completed',        priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 7',  scheduledTime: '09:00', assignedTo: 'العامل يوسف',   myRole: 'مراجعة وإشراف',         estimatedCost: 45 },
+      { id: 42, title: 'مراجعة ميدانية — رش بيت 3',               type: 'spraying',         status: 'waitingSupervisor',priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 3',  scheduledTime: '09:30', assignedTo: 'العامل سعد',    myRole: 'مراجعة ميدانية', waitingAction: 'مراجعتك الميدانية مطلوبة الآن' },
+      { id: 43, title: 'إشراف على تسميد بيت 1',                   type: 'fertilization',    status: 'scheduled',        priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 1',  scheduledTime: '14:00', assignedTo: 'العامل عمر',    myRole: 'إشراف' },
+      { id: 44, title: 'متابعة العامل رامي — تنظيف بيت 9',         type: 'greenhouse_cleaning',status: 'inProgress',   priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 9',  scheduledTime: '10:00', assignedTo: 'العامل رامي',   myRole: 'إشراف' },
+      { id: 45, title: 'رفع صورة عداد الري — بيت 7',              type: 'meter_reading',    status: 'completed',        priority: 'low',    farm: 'مزرعة النخيل', field: 'بيت محمي 7',  scheduledTime: '09:50', assignedTo: 'المشرف خالد',   myRole: 'التحقق من القراءة' },
+      { id: 46, title: 'توجيه يوسف — ري بيت 12 مساءً',            type: 'irrigation',       status: 'assigned',         priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 12', scheduledTime: '15:00', assignedTo: 'العامل يوسف',   myRole: 'توجيه' },
+    ],
+  },
+  worker: {
+    summary: { total: 3, done: 1, urgent: 1, late: 0, waiting: 0 },
+    tasks: [
+      { id: 51, title: 'ري البيت المحمي رقم 7',           type: 'irrigation',         status: 'completed',  priority: 'high',   farm: 'مزرعة النخيل', field: 'بيت محمي 7',  scheduledTime: '09:00', assignedTo: 'أنت', estimatedCost: 45,  notes: '45 دقيقة — محطة التحلية رقم 1 — الضغط 2.5 بار' },
+      { id: 52, title: 'تنظيف ممرات بيت محمي رقم 7',      type: 'greenhouse_cleaning',status: 'mustDoNow',  priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 7',  scheduledTime: '11:00', assignedTo: 'أنت', notes: 'تنظيف الممرات الرئيسية والجانبية، التخلص من بقايا النباتات، رش الأرضية بالماء' },
+      { id: 53, title: 'ري البيت المحمي رقم 12',           type: 'irrigation',         status: 'scheduled',  priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 12', scheduledTime: '15:00', assignedTo: 'أنت', notes: '30 دقيقة — محطة التحلية رقم 2' },
+    ],
+  },
+  technician: {
+    summary: { total: 6, done: 2, urgent: 1, late: 0, waiting: 1 },
+    tasks: [
+      { id: 61, title: 'إصلاح مضخة الري الرئيسية',        type: 'maintenance',   status: 'inProgress', priority: 'high',   farm: 'مزرعة النخيل', field: 'محطة الضخ',    scheduledTime: '08:30', assignedTo: 'أنت', estimatedCost: 850, notes: 'تغيير ختم المضخة — الكمية: 2 ختم — متوفر في المستودع' },
+      { id: 62, title: 'فحص حساسات الرطوبة — بيت 12',    type: 'sensor_check',  status: 'completed',  priority: 'medium', farm: 'مزرعة النخيل', field: 'بيت محمي 12', scheduledTime: '08:00', assignedTo: 'أنت' },
+      { id: 63, title: 'قراءة عداد الكهرباء الرئيسي',     type: 'meter_reading', status: 'mustDoNow',  priority: 'medium', farm: 'مزرعة النخيل', field: 'لوحة الكهرباء',scheduledTime: '10:00', assignedTo: 'أنت', notes: 'تسجيل القراءة ورفع صورة العداد الرئيسي', waitingAction: 'مطلوب منك الآن — رفع صورة العداد' },
+      { id: 64, title: 'صيانة وقائية — مراوح بيت 5',       type: 'maintenance',   status: 'scheduled',  priority: 'low',    farm: 'مزرعة النخيل', field: 'بيت محمي 5',  scheduledTime: '14:00', assignedTo: 'أنت' },
+      { id: 65, title: 'فحص كاميرا بيت محمي 7',           type: 'camera_check',  status: 'waitingWarehouse',priority: 'low', farm: 'مزرعة النخيل', field: 'بيت محمي 7', scheduledTime: '11:30', assignedTo: 'أنت', notes: 'بانتظار قطع الغيار من المستودع' },
+      { id: 66, title: 'تشغيل مضخة الري — دورة المساء',   type: 'pump_operation',status: 'scheduled',  priority: 'medium', farm: 'مزرعة النخيل', field: 'محطة الضخ',    scheduledTime: '18:00', assignedTo: 'أنت' },
+    ],
+  },
+  warehouse: {
+    summary: { total: 5, done: 1, urgent: 0, late: 0, waiting: 3 },
+    tasks: [
+      { id: 71, title: 'صرف مبيد — رش وقائي بيت 3',       type: 'material_dispatch', status: 'waitingWarehouse', priority: 'high',   farm: 'مزرعة النخيل', field: 'المستودع', scheduledTime: '11:00', assignedTo: 'أنت', myRole: 'صرف أو رفض', waitingAction: 'إجراؤك مطلوب: صرف أو رفض', notes: 'مبيد بايوجارد 5 لتر — الرصيد: 12 لتر — يمكن الصرف', estimatedCost: 320 },
+      { id: 72, title: 'صرف قطع غيار — مضخة رئيسية',      type: 'material_dispatch', status: 'waitingWarehouse', priority: 'high',   farm: 'مزرعة النخيل', field: 'المستودع', scheduledTime: '09:00', assignedTo: 'أنت', myRole: 'صرف أو رفض', waitingAction: 'إجراؤك مطلوب: صرف أو رفض', notes: 'ختم مضخة — الكمية: 2 — الرصيد: 5 — يمكن الصرف' },
+      { id: 73, title: 'صرف أسمدة — دورة الخيار',          type: 'material_dispatch', status: 'waitingWarehouse', priority: 'medium', farm: 'مزرعة النخيل', field: 'المستودع', scheduledTime: '14:00', assignedTo: 'أنت', myRole: 'صرف أو رفض', waitingAction: 'الكمية غير كافية — الرفض مطلوب', notes: 'NPK 50 كغ — الرصيد: 20 كغ فقط — يجب الرفض', estimatedCost: 1200 },
+      { id: 74, title: 'جرد المستودع الأسبوعي',             type: 'material_dispatch', status: 'scheduled',       priority: 'low',    farm: 'مزرعة النخيل', field: 'المستودع', scheduledTime: '16:00', assignedTo: 'أنت', myRole: 'تنفيذ' },
+      { id: 75, title: 'استلام شحنة أسمدة من المورد',       type: 'purchase',          status: 'completed',       priority: 'medium', farm: 'مزرعة النخيل', field: 'المستودع', scheduledTime: '08:00', assignedTo: 'أنت', myRole: 'استلام وإدخال' },
+    ],
+  },
+  accountant: {
+    summary: { total: 7, done: 2, urgent: 0, late: 0, waiting: 3 },
+    tasks: [
+      { id: 81, title: 'اعتماد تكلفة شراء أسمدة',          type: 'purchase', status: 'waitingFinance', priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب', scheduledTime: '10:00', assignedTo: 'أنت', myRole: 'اعتماد مالي',    waitingAction: 'اعتمادك المالي مطلوب', estimatedCost: 1200 },
+      { id: 82, title: 'إدخال فاتورة مبيد — رش بيت 3',     type: 'purchase', status: 'waitingFinance', priority: 'low',    farm: 'مزرعة النخيل', field: 'المكتب', scheduledTime: '11:00', assignedTo: 'أنت', myRole: 'إدخال فاتورة',  waitingAction: 'الفاتورة بانتظار الإدخال', estimatedCost: 180 },
+      { id: 83, title: 'رواتب العمال — مايو 2026',          type: 'purchase', status: 'waitingFinance', priority: 'high',   farm: 'مزرعة النخيل', field: 'المكتب', scheduledTime: '12:00', assignedTo: 'أنت', myRole: 'اعتماد الرواتب', waitingAction: 'صرف الرواتب مجدول اليوم', estimatedCost: 19500 },
+      { id: 84, title: 'تقرير مصروفات الأسبوع',             type: 'report',   status: 'inProgress',     priority: 'medium', farm: 'مزرعة النخيل', field: 'المكتب', scheduledTime: '14:00', assignedTo: 'أنت', myRole: 'إعداد تقرير' },
+      { id: 85, title: 'دفع فاتورة الكهرباء',               type: 'purchase', status: 'completed',      priority: 'high',   farm: 'مزرعة النخيل', field: 'المكتب', scheduledTime: '08:00', assignedTo: 'أنت', myRole: 'دفع', estimatedCost: 4200 },
+    ],
+  },
+};

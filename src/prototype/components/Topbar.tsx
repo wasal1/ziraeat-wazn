@@ -31,6 +31,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
   waste:         { title: 'تحليل الهدر والنفقات',          sub: 'رصد مصادر الهدر وفرص توفير التكاليف' },
   alerts:        { title: 'مركز التنبيهات',                sub: 'رصد وإدارة جميع التنبيهات والإشعارات الحرجة' },
   taskdetail:    { title: 'تفاصيل المهمة اليومية',         sub: 'توثيق التنفيذ والمحادثة والمرفقات' },
+  mytoday:       { title: 'عملي اليوم',                    sub: 'مهامك ومسؤولياتك حسب دورك — محدَّثة تلقائياً' },
 };
 
 interface Props {

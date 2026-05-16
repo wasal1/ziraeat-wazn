@@ -36,7 +36,8 @@ const NAV: NavItem[] = [
   { id: 'analysis',      label: 'التحليل الذكي',               icon: '🤖',  live: true,  group: 'التحليل'           },
   { id: 'reports',       label: 'التقارير',                    icon: '📊',  live: true                              },
   // ─── المتابعة الذكية
-  { id: 'dailyops',     label: 'العمليات اليومية',             icon: '📋',  live: true,  group: 'المتابعة الذكية'  },
+  { id: 'mytoday',      label: 'عملي اليوم',                   icon: '🎯',  live: true,  group: 'المتابعة الذكية'  },
+  { id: 'dailyops',     label: 'العمليات اليومية',             icon: '📋',  live: true                              },
   { id: 'tasks',        label: 'المهام وأوامر العمل',           icon: '✅',  live: true                              },
   { id: 'messages',     label: 'المراسلات والمرفقات',           icon: '💬',  live: true                              },
   { id: 'cameras',      label: 'الكاميرات والمراقبة',           icon: '📷',  live: true                              },

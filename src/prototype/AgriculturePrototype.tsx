@@ -30,6 +30,7 @@ import MaintenancePage from './pages/MaintenancePage';
 import WastePage from './pages/WastePage';
 import AlertsPage from './pages/AlertsPage';
 import TaskDetailPage from './pages/TaskDetailPage';
+import MyTodayPage from './pages/MyTodayPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { PLATFORM } from './data/mockData';
 
@@ -181,6 +182,7 @@ function PageContent({ page, onNav }: { page: string; onNav: (p: string) => void
     case 'waste':         return <WastePage />;
     case 'alerts':        return <AlertsPage />;
     case 'taskdetail':    return <TaskDetailPage onNav={onNav} />;
+    case 'mytoday':       return <MyTodayPage onNav={onNav} />;
     default: {
       const p = PLACEHOLDERS[page];
       return p
