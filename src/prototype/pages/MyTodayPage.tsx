@@ -4,6 +4,7 @@ import GlassCard from '../components/GlassCard';
 import SectionHeader from '../components/SectionHeader';
 import {
   myTodayRoles, fullStatusConfig, myTodayData, taskTypeConfig,
+  dailyOperations, dailyOpStats, opTypeConfig,
 } from '../data/mockData';
 import { type MyTodayRoleId, type MyTask } from '../data/mockData';
 
@@ -16,6 +17,25 @@ const PRIORITY_STYLE: Record<string, string> = {
 const PRIORITY_LABEL: Record<string, string> = {
   high: 'عالية', medium: 'متوسطة', low: 'منخفضة',
 };
+
+// ─── Daily ops lookups (for farmops view) ─────────────────
+const OPS_STATUS_STYLE: Record<string, string> = {
+  completed:  'bg-green-100 text-green-700',
+  inProgress: 'bg-blue-100 text-blue-700',
+  scheduled:  'bg-amber-100 text-amber-700',
+  cancelled:  'bg-gray-100 text-gray-500',
+};
+const OPS_STATUS_LABEL: Record<string, string> = {
+  completed: 'منجزة', inProgress: 'جارية', scheduled: 'مجدولة', cancelled: 'ملغاة',
+};
+const OPS_PRIORITY_STYLE: Record<string, string> = {
+  high: 'bg-red-100 text-red-700', medium: 'bg-amber-100 text-amber-700', low: 'bg-gray-100 text-gray-500',
+};
+const OPS_PRIORITY_LABEL: Record<string, string> = {
+  high: 'عالية', medium: 'متوسطة', low: 'منخفضة',
+};
+
+const SUPERVISORY_ROLES = new Set(['owner', 'manager', 'engineer', 'supervisor']);
 
 const VALUE_POINTS = [
   { icon: '📌', text: 'كل شخص يعرف المطلوب منه في الوقت المناسب — لا انتظار ولا تخمين' },
@@ -112,8 +132,17 @@ function TaskRow({ task, onNav }: { task: MyTask; onNav: (p: string) => void }) 
 interface Props { onNav: (p: string) => void; }
 
 export default function MyTodayPage({ onNav }: Props) {
-  const [roleId, setRoleId]           = useState<MyTodayRoleId>('manager');
+  const [roleId, setRoleId]             = useState<MyTodayRoleId>('manager');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [view, setView]                 = useState<'mywork' | 'farmops'>('mywork');
+  const [opsFilter, setOpsFilter]       = useState('all');
+  const [opsSearch, setOpsSearch]       = useState('');
+
+  const handleRoleChange = (id: MyTodayRoleId) => {
+    setRoleId(id);
+    setStatusFilter('all');
+    if (!SUPERVISORY_ROLES.has(id)) setView('mywork');
+  };
 
   const role          = myTodayRoles.find((r) => r.id === roleId)!;
   const { summary, tasks } = myTodayData[roleId];
@@ -129,8 +158,15 @@ export default function MyTodayPage({ onNav }: Props) {
     ? tasks
     : tasks.filter((t) => t.status === statusFilter);
 
-  const isWorker = roleId === 'worker';
+  const isWorker      = roleId === 'worker';
+  const isSupervision = SUPERVISORY_ROLES.has(roleId);
   const currentWorkerTask = isWorker ? tasks.find((t) => t.status === 'mustDoNow') : null;
+
+  const filteredOps = dailyOperations.filter((op) => {
+    const matchStatus = opsFilter === 'all' || op.status === opsFilter;
+    const matchSearch = opsSearch === '' || op.title.includes(opsSearch) || op.farm.includes(opsSearch) || op.worker.includes(opsSearch);
+    return matchStatus && matchSearch;
+  });
 
   return (
     <PageContainer>
@@ -146,7 +182,7 @@ export default function MyTodayPage({ onNav }: Props) {
           return (
             <button
               key={r.id}
-              onClick={() => { setRoleId(r.id); setStatusFilter('all'); }}
+              onClick={() => handleRoleChange(r.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all
                 ${isActive
                   ? `bg-gradient-to-l ${r.accent} text-white shadow-md`
@@ -159,6 +195,130 @@ export default function MyTodayPage({ onNav }: Props) {
           );
         })}
       </div>
+
+      {/* ─── View toggle — supervisory roles only ─── */}
+      {isSupervision && (
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+          <button
+            onClick={() => setView('mywork')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all
+              ${view === 'mywork' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            🎯 مهامي
+          </button>
+          <button
+            onClick={() => setView('farmops')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all
+              ${view === 'farmops' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            📋 إشراف ميداني
+          </button>
+        </div>
+      )}
+
+      {/* ═══ FARMOPS VIEW ═══ */}
+      {view === 'farmops' && isSupervision && (
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { label: 'الإجمالي اليوم',  value: dailyOpStats.totalToday,                           icon: '📋', color: 'text-gray-700'   },
+              { label: 'منجزة',            value: dailyOpStats.completed,                            icon: '✅', color: 'text-green-600'  },
+              { label: 'جارية',            value: dailyOpStats.inProgress,                           icon: '⏳', color: 'text-blue-600'   },
+              { label: 'مجدولة',           value: dailyOpStats.scheduled,                            icon: '🗓️', color: 'text-amber-600'  },
+              { label: 'التكلفة اليومية', value: `${dailyOpStats.totalCost.toLocaleString()} ر.س`,  icon: '💸', color: 'text-purple-600' },
+              { label: 'وفر عن المعدل',   value: `${dailyOpStats.savedVsAvg.toLocaleString()} ر.س`, icon: '💰', color: 'text-emerald-600'},
+            ].map((s) => (
+              <GlassCard key={s.label} className="text-center">
+                <p className="text-2xl mb-1">{s.icon}</p>
+                <p className={`font-bold text-lg ${s.color}`}>{s.value}</p>
+                <p className="text-[11px] text-gray-400 mt-0.5">{s.label}</p>
+              </GlassCard>
+            ))}
+          </div>
+
+          {/* Filter + Search */}
+          <GlassCard>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                value={opsSearch}
+                onChange={(e) => setOpsSearch(e.target.value)}
+                placeholder="بحث في العمليات..."
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              />
+              <div className="flex gap-2 flex-wrap">
+                {(['all', 'inProgress', 'scheduled', 'completed'] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setOpsFilter(s)}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${opsFilter === s ? 'bg-green-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  >
+                    {s === 'all' ? 'الكل' : OPS_STATUS_LABEL[s]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* Operations list */}
+          <GlassCard title={`العمليات (${filteredOps.length})`} noPadding>
+            <div className="divide-y divide-gray-100/80">
+              {filteredOps.map((op) => {
+                const cfg = opTypeConfig[op.type] ?? { label: op.type, icon: '📌' };
+                return (
+                  <div key={op.id} className="px-4 py-3 md:px-5 md:py-4 hover:bg-gray-50/50 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-xl flex-shrink-0">
+                        {cfg.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="font-semibold text-gray-800 text-sm">{op.title}</span>
+                          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${OPS_STATUS_STYLE[op.status]}`}>
+                            {OPS_STATUS_LABEL[op.status]}
+                          </span>
+                          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${OPS_PRIORITY_STYLE[op.priority]}`}>
+                            {OPS_PRIORITY_LABEL[op.priority]}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-gray-500">
+                          <span>📍 {op.farm} — {op.field}</span>
+                          <span>👷 {op.worker}</span>
+                          <span>🏷️ {cfg.label}</span>
+                        </div>
+                        {op.notes && (
+                          <p className="text-[12px] text-gray-400 mt-1 truncate">{op.notes}</p>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0 text-left text-[12px] text-gray-500 space-y-1">
+                        <p className="font-semibold text-green-700">{op.cost.toLocaleString()} ر.س</p>
+                        <p>{op.startTime}</p>
+                        <p className="text-gray-400">{op.duration}</p>
+                        <button
+                          onClick={() => onNav('taskdetail')}
+                          className="mt-1 text-[11px] font-medium text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors"
+                        >
+                          عرض التفاصيل ←
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {filteredOps.length === 0 && (
+                <div className="py-16 text-center text-gray-400">
+                  <p className="text-4xl mb-3">📋</p>
+                  <p className="text-sm">لا توجد عمليات مطابقة</p>
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </>
+      )}
+
+      {/* ═══ MY WORK VIEW ═══ */}
+      {view === 'mywork' && (
+      <>
 
       {/* ─── Stats ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -458,6 +618,10 @@ export default function MyTodayPage({ onNav }: Props) {
           </div>
         </div>
       </GlassCard>
+
+      </> /* end mywork view */
+      )}
+
     </PageContainer>
   );
 }
