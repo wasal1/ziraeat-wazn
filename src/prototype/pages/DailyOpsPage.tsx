@@ -27,7 +27,9 @@ const PRIORITY_LABEL: Record<string, string> = {
 
 type FilterStatus = 'all' | 'completed' | 'inProgress' | 'scheduled';
 
-export default function DailyOpsPage() {
+interface Props { onNav: (p: string) => void; }
+
+export default function DailyOpsPage({ onNav }: Props) {
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [search, setSearch] = useState('');
 
@@ -119,6 +121,12 @@ export default function DailyOpsPage() {
                     <p className="font-semibold text-green-700">{op.cost.toLocaleString()} ر.س</p>
                     <p>{op.startTime}</p>
                     <p className="text-gray-400">{op.duration}</p>
+                    <button
+                      onClick={() => onNav('taskdetail')}
+                      className="mt-1 text-[11px] font-medium text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors"
+                    >
+                      عرض التفاصيل ←
+                    </button>
                   </div>
                 </div>
               </div>

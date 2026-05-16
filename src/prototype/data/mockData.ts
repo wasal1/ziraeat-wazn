@@ -1350,3 +1350,175 @@ export const alertsList = [
 ];
 
 export const alertStats = { total: 12, critical: 2, high: 3, medium: 4, low: 3, resolvedToday: 2 };
+
+// ════════════════════════════════════════════════════════
+// وحدة تفاصيل المهمة اليومية المتكاملة
+// ════════════════════════════════════════════════════════
+
+export const taskTypeConfig: Record<string, { label: string; icon: string }> = {
+  irrigation:          { label: 'ري',                  icon: '💧' },
+  fertilization:       { label: 'تسميد',               icon: '🧪' },
+  spraying:            { label: 'رش ومكافحة',          icon: '🫧' },
+  disease_inspection:  { label: 'فحص مرض/آفة',         icon: '🔍' },
+  harvest:             { label: 'حصاد',                icon: '🌾' },
+  sorting:             { label: 'فرز',                 icon: '📦' },
+  packing:             { label: 'تعبئة',               icon: '🎁' },
+  transport:           { label: 'نقل',                 icon: '🚛' },
+  maintenance:         { label: 'صيانة',               icon: '🔧' },
+  pump_operation:      { label: 'تشغيل مضخة',          icon: '⚡' },
+  sensor_check:        { label: 'فحص حساس',            icon: '📡' },
+  camera_check:        { label: 'فحص كاميرا',          icon: '📷' },
+  meter_reading:       { label: 'قراءة عداد',          icon: '🔢' },
+  greenhouse_cleaning: { label: 'تنظيف بيت محمي',      icon: '🧹' },
+  growth_monitoring:   { label: 'متابعة نمو',          icon: '🌱' },
+  material_dispatch:   { label: 'صرف مواد',            icon: '📤' },
+  purchase:            { label: 'شراء',                icon: '🛒' },
+  breakdown_report:    { label: 'بلاغ عطل',            icon: '⚠️' },
+};
+
+export const taskStatusConfig: Record<string, { label: string; style: string }> = {
+  draft:           { label: 'مسودة',           style: 'bg-gray-100 text-gray-500'    },
+  scheduled:       { label: 'مجدولة',          style: 'bg-blue-100 text-blue-700'    },
+  assigned:        { label: 'مُسندة',           style: 'bg-purple-100 text-purple-700'},
+  inProgress:      { label: 'قيد التنفيذ',     style: 'bg-sky-100 text-sky-700'      },
+  pendingReview:   { label: 'بانتظار مراجعة',  style: 'bg-amber-100 text-amber-700'  },
+  pendingApproval: { label: 'بانتظار اعتماد',  style: 'bg-orange-100 text-orange-700'},
+  completed:       { label: 'مكتملة',          style: 'bg-green-100 text-green-700'  },
+  rejected:        { label: 'مرفوضة',          style: 'bg-red-100 text-red-700'      },
+  overdue:         { label: 'متأخرة',          style: 'bg-red-100 text-red-600'      },
+  cancelled:       { label: 'ملغاة',           style: 'bg-gray-100 text-gray-400'    },
+};
+
+export const msgTypeConfig: Record<string, { label: string; icon: string }> = {
+  text:             { label: 'رسالة',           icon: '💬' },
+  image:            { label: 'صورة',            icon: '🖼️' },
+  note:             { label: 'ملاحظة تنفيذ',   icon: '📝' },
+  approval_request: { label: 'طلب اعتماد',     icon: '🔔' },
+  approval:         { label: 'اعتماد',         icon: '✅' },
+  rejection:        { label: 'رفض',            icon: '❌' },
+  redo_request:     { label: 'إعادة تنفيذ',    icon: '🔄' },
+  status_change:    { label: 'تغيير حالة',     icon: '🔀' },
+  system:           { label: 'نظام',           icon: '⚙️' },
+  mention:          { label: 'إشارة',          icon: '@'  },
+};
+
+export const attachmentTypeConfig: Record<string, { label: string; icon: string }> = {
+  before:    { label: 'قبل التنفيذ',  icon: '📸' },
+  after:     { label: 'بعد التنفيذ', icon: '📸' },
+  disease:   { label: 'صورة مرض',    icon: '🔬' },
+  pest:      { label: 'صورة آفة',    icon: '🦗' },
+  meter:     { label: 'صورة عداد',   icon: '🔢' },
+  invoice:   { label: 'فاتورة',      icon: '🧾' },
+  equipment: { label: 'صورة جهاز',   icon: '⚙️' },
+  breakdown: { label: 'صورة عطل',    icon: '🔴' },
+  harvest:   { label: 'صورة حصاد',   icon: '🌾' },
+  document:  { label: 'مستند/ملف',   icon: '📄' },
+  other:     { label: 'أخرى',        icon: '📎' },
+};
+
+export const sampleTaskDetail = {
+  id: 101,
+  title: 'رش وقائي ضد البياض الدقيقي — بيت محمي رقم 7',
+  type: 'spraying',
+  priority: 'high',
+  status: 'pendingReview',
+  cycle: 'خيار — بيت محمي رقم 7',
+  farm: 'مزرعة النخيل',
+  field: 'بيت محمي 7',
+  scheduledTime: 'اليوم 17:00',
+  dueDate: '2026-05-16',
+  createdDate: '2026-05-16',
+  estimatedCost: 180,
+  actualCost: 165,
+  instructions: 'رش وقائي ضد البياض الدقيقي بجرعة مخفضة 50% مع مادة Myclobutanil. تصوير الأوراق قبل وبعد الرش. تهوية البيت لمدة ساعة كاملة بعد الانتهاء. ارتداء معدات الحماية الشخصية طوال مدة التنفيذ.',
+  participants: [
+    { name: 'المهندس أحمد',  role: 'المهندس الزراعي',  initials: 'أح', color: 'bg-purple-500' },
+    { name: 'المشرف خالد',   role: 'المشرف الميداني',   initials: 'خل', color: 'bg-blue-500'   },
+    { name: 'العامل يوسف',   role: 'العامل',            initials: 'يو', color: 'bg-green-500'  },
+  ],
+  materials: [
+    { name: 'Myclobutanil — مبيد فطري', qty: 50, unit: 'مل',   cost: 120 },
+    { name: 'قفازات حماية',              qty: 1,  unit: 'زوج',  cost: 15  },
+    { name: 'كمامة تنفس',                qty: 1,  unit: 'قطعة', cost: 25  },
+    { name: 'ماء (محلول الرش)',          qty: 20, unit: 'لتر',   cost: 0   },
+  ],
+  executionLog: [
+    { time: '15:30', actor: 'المهندس أحمد', role: 'المهندس الزراعي',  action: 'إنشاء المهمة وإسنادها للمشرف خالد',         type: 'create'   },
+    { time: '16:30', actor: 'المشرف خالد',  role: 'المشرف الميداني',  action: 'استلام المهمة وتوجيه العامل يوسف للتنفيذ',  type: 'assign'   },
+    { time: '16:55', actor: 'العامل يوسف',  role: 'العامل',            action: 'صرف المواد (مبيد + معدات حماية) من المستودع', type: 'material' },
+    { time: '17:05', actor: 'العامل يوسف',  role: 'العامل',            action: 'بدء تجهيز محلول الرش وتجهيز الرش',           type: 'start'    },
+    { time: '17:20', actor: 'العامل يوسف',  role: 'العامل',            action: 'بدء تنفيذ الرش الميداني في البيت 7',          type: 'progress' },
+    { time: '18:10', actor: 'العامل يوسف',  role: 'العامل',            action: 'الانتهاء من الرش وتهوية البيت المحمي',        type: 'done'     },
+    { time: '18:25', actor: 'المشرف خالد',  role: 'المشرف الميداني',  action: 'مراجعة ميدانية — الرش تم بشكل صحيح وكامل',  type: 'review'   },
+    { time: '18:30', actor: 'النظام',        role: '',                  action: 'تغيير تلقائي للحالة إلى "بانتظار مراجعة"',   type: 'system'   },
+  ],
+};
+
+export const taskConversation = [
+  {
+    id: 1, type: 'text', sender: 'المهندس أحمد', role: 'المهندس الزراعي',
+    initials: 'أح', color: 'bg-purple-500', time: '15:30', isSystem: false,
+    text: 'يرجى تنفيذ رش وقائي ضد البياض الدقيقي بجرعة مخفضة، مع تصوير الأوراق قبل وبعد الرش.',
+  },
+  {
+    id: 2, type: 'text', sender: 'المشرف خالد', role: 'المشرف الميداني',
+    initials: 'خل', color: 'bg-blue-500', time: '16:30', isSystem: false,
+    text: 'تم استلام المهمة، وسيتم توجيه العامل يوسف للتنفيذ الساعة 5 مساءً.',
+  },
+  {
+    id: 3, type: 'system', sender: 'النظام', role: '',
+    initials: '⚙', color: 'bg-gray-400', time: '16:35', isSystem: true,
+    text: 'تم إسناد المهمة إلى العامل يوسف', statusChange: 'مُسندة',
+  },
+  {
+    id: 4, type: 'image', sender: 'العامل يوسف', role: 'العامل',
+    initials: 'يو', color: 'bg-green-500', time: '17:10', isSystem: false,
+    text: 'صورة الأوراق قبل الرش — يظهر بياض طفيف في الزاوية الشمالية للبيت.',
+    attachments: [{ type: 'before', label: 'صورة قبل الرش', filename: 'before_spray_beit7.jpg' }],
+  },
+  {
+    id: 5, type: 'note', sender: 'العامل يوسف', role: 'العامل',
+    initials: 'يو', color: 'bg-green-500', time: '18:10', isSystem: false,
+    text: 'تم التنفيذ. مرفق صورة المبيد المستخدم وصورة الأوراق بعد الرش.',
+    attachments: [
+      { type: 'after',     label: 'صورة بعد الرش',     filename: 'after_spray_beit7.jpg'     },
+      { type: 'equipment', label: 'صورة المبيد المستخدم', filename: 'myclobutanil_bottle.jpg' },
+    ],
+  },
+  {
+    id: 6, type: 'system', sender: 'النظام', role: '',
+    initials: '⚙', color: 'bg-gray-400', time: '18:11', isSystem: true,
+    text: 'تم إرفاق 3 صور بواسطة العامل يوسف',
+  },
+  {
+    id: 7, type: 'text', sender: 'المشرف خالد', role: 'المشرف الميداني',
+    initials: 'خل', color: 'bg-blue-500', time: '18:25', isSystem: false,
+    text: 'تمت مراجعة التنفيذ ميدانياً، والرش تم بشكل صحيح وكامل في جميع أنحاء البيت.',
+  },
+  {
+    id: 8, type: 'approval_request', sender: 'المشرف خالد', role: 'المشرف الميداني',
+    initials: 'خل', color: 'bg-blue-500', time: '18:28', isSystem: false,
+    text: '@المهندس أحمد — طلب اعتماد إتمام المهمة. تمت المراجعة الميدانية بنجاح والتنفيذ مطابق للمواصفات.',
+  },
+  {
+    id: 9, type: 'system', sender: 'النظام', role: '',
+    initials: '⚙', color: 'bg-gray-400', time: '18:28', isSystem: true,
+    text: 'تم تغيير الحالة إلى "بانتظار اعتماد"', statusChange: 'بانتظار اعتماد',
+  },
+  {
+    id: 10, type: 'approval', sender: 'المهندس أحمد', role: 'المهندس الزراعي',
+    initials: 'أح', color: 'bg-purple-500', time: '18:45', isSystem: false,
+    text: 'معتمد. الرجاء متابعة الحالة بعد 48 ساعة وإرسال تقرير بنتيجة الرش.',
+  },
+  {
+    id: 11, type: 'system', sender: 'النظام', role: '',
+    initials: '⚙', color: 'bg-gray-400', time: '18:45', isSystem: true,
+    text: 'تم تغيير حالة المهمة من "بانتظار اعتماد" إلى "مكتملة"', statusChange: 'مكتملة',
+  },
+];
+
+export const taskAttachments = [
+  { id: 1, type: 'before',    label: 'الأوراق قبل الرش',      filename: 'before_spray_beit7.jpg',  uploadedBy: 'العامل يوسف', time: '17:10', size: '2.4 MB', emoji: '🌿' },
+  { id: 2, type: 'after',     label: 'الأوراق بعد الرش',      filename: 'after_spray_beit7.jpg',   uploadedBy: 'العامل يوسف', time: '18:10', size: '2.1 MB', emoji: '🌿' },
+  { id: 3, type: 'equipment', label: 'صورة المبيد المستخدم',  filename: 'myclobutanil_bottle.jpg', uploadedBy: 'العامل يوسف', time: '18:10', size: '1.8 MB', emoji: '🧴' },
+];

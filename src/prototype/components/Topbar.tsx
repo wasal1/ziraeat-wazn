@@ -30,6 +30,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
   maintenance:   { title: 'الصيانة والأعطال',              sub: 'متابعة الأعطال والصيانة الوقائية للمعدات' },
   waste:         { title: 'تحليل الهدر والنفقات',          sub: 'رصد مصادر الهدر وفرص توفير التكاليف' },
   alerts:        { title: 'مركز التنبيهات',                sub: 'رصد وإدارة جميع التنبيهات والإشعارات الحرجة' },
+  taskdetail:    { title: 'تفاصيل المهمة اليومية',         sub: 'توثيق التنفيذ والمحادثة والمرفقات' },
 };
 
 interface Props {

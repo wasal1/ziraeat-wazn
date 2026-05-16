@@ -29,6 +29,7 @@ import SensorsPage from './pages/SensorsPage';
 import MaintenancePage from './pages/MaintenancePage';
 import WastePage from './pages/WastePage';
 import AlertsPage from './pages/AlertsPage';
+import TaskDetailPage from './pages/TaskDetailPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { PLATFORM } from './data/mockData';
 
@@ -148,7 +149,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 }
 
 // ─── Page router ─────────────────────────────────────────
-function PageContent({ page }: { page: string }) {
+function PageContent({ page, onNav }: { page: string; onNav: (p: string) => void }) {
   switch (page) {
     case 'dashboard':  return <DashboardPage />;
     case 'cycles':     return <GrowingCyclePage />;
@@ -170,7 +171,7 @@ function PageContent({ page }: { page: string }) {
     case 'inventory':     return <InventoryPage />;
     case 'settings':      return <SettingsPage />;
     case 'subscription':  return <SubscriptionPage />;
-    case 'dailyops':      return <DailyOpsPage />;
+    case 'dailyops':      return <DailyOpsPage onNav={onNav} />;
     case 'tasks':         return <TasksPage />;
     case 'messages':      return <MessagesPage />;
     case 'cameras':       return <CamerasPage />;
@@ -179,6 +180,7 @@ function PageContent({ page }: { page: string }) {
     case 'maintenance':   return <MaintenancePage />;
     case 'waste':         return <WastePage />;
     case 'alerts':        return <AlertsPage />;
+    case 'taskdetail':    return <TaskDetailPage onNav={onNav} />;
     default: {
       const p = PLACEHOLDERS[page];
       return p
@@ -197,7 +199,7 @@ export default function AgriculturePrototype() {
 
   return (
     <AppLayout current={page} onNav={setPage}>
-      <PageContent page={page} />
+      <PageContent page={page} onNav={setPage} />
     </AppLayout>
   );
 }
