@@ -39,7 +39,6 @@ const NAV: NavItem[] = [
   { id: 'mytoday',      label: 'عملي اليوم',                   icon: '🎯',  live: true,  group: 'المتابعة الذكية'  },
   { id: 'dailyops',     label: 'العمليات اليومية',             icon: '📋',  live: true                              },
   { id: 'tasks',        label: 'المهام وأوامر العمل',           icon: '✅',  live: true                              },
-  { id: 'messages',     label: 'المراسلات والمرفقات',           icon: '💬',  live: true                              },
   { id: 'cameras',      label: 'الكاميرات والمراقبة',           icon: '📷',  live: true                              },
   { id: 'pumps',        label: 'الري الكهربائي والمضخات',       icon: '⚡',  live: true                              },
   { id: 'sensors',      label: 'الحساسات والقراءات',            icon: '📡',  live: true                              },
