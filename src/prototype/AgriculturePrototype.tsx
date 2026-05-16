@@ -20,6 +20,15 @@ import NurseryPage from './pages/NurseryPage';
 import InventoryPage from './pages/InventoryPage';
 import SettingsPage from './pages/SettingsPage';
 import SubscriptionPage from './pages/SubscriptionPage';
+import DailyOpsPage from './pages/DailyOpsPage';
+import TasksPage from './pages/TasksPage';
+import MessagesPage from './pages/MessagesPage';
+import CamerasPage from './pages/CamerasPage';
+import PumpsPage from './pages/PumpsPage';
+import SensorsPage from './pages/SensorsPage';
+import MaintenancePage from './pages/MaintenancePage';
+import WastePage from './pages/WastePage';
+import AlertsPage from './pages/AlertsPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import { PLATFORM } from './data/mockData';
 
@@ -161,6 +170,15 @@ function PageContent({ page }: { page: string }) {
     case 'inventory':     return <InventoryPage />;
     case 'settings':      return <SettingsPage />;
     case 'subscription':  return <SubscriptionPage />;
+    case 'dailyops':      return <DailyOpsPage />;
+    case 'tasks':         return <TasksPage />;
+    case 'messages':      return <MessagesPage />;
+    case 'cameras':       return <CamerasPage />;
+    case 'pumps':         return <PumpsPage />;
+    case 'sensors':       return <SensorsPage />;
+    case 'maintenance':   return <MaintenancePage />;
+    case 'waste':         return <WastePage />;
+    case 'alerts':        return <AlertsPage />;
     default: {
       const p = PLACEHOLDERS[page];
       return p

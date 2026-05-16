@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════
+﻿// ═══════════════════════════════════════════
 // بيانات وهمية — منصة حصاد الذكية
 // ═══════════════════════════════════════════
 
@@ -965,6 +965,7 @@ export const notificationSettings = [
   { id: 'worker_absence',  label: 'تنبيه غياب العمال',          enabled: false, channel: 'تطبيق' },
 ];
 
+
 // ─── Subscription Plans ──────────────────────────────────
 
 export type PlanId = 'starter' | 'professional' | 'company' | 'enterprise';
@@ -1140,3 +1141,212 @@ export const moduleAccessMap: Record<PlanId, string[]> = {
   ],
   enterprise: ['وصول كامل غير محدود مع تخصيص كامل'],
 };
+
+// ════════════════════════════════════════════════════════
+// المتابعة الذكية وتقليل النفقات
+// ════════════════════════════════════════════════════════
+
+// ─── العمليات اليومية ───────────────────────────────────
+
+export const opTypeConfig: Record<string, { label: string; icon: string }> = {
+  irrigation:    { label: 'ري',             icon: '💧' },
+  fertilization: { label: 'تسميد',          icon: '🧪' },
+  harvest:       { label: 'حصاد',           icon: '🌾' },
+  spraying:      { label: 'رش',             icon: '🫧' },
+  planting:      { label: 'زراعة',          icon: '🌱' },
+  maintenance:   { label: 'صيانة',          icon: '🔧' },
+  inspection:    { label: 'فحص',            icon: '🔍' },
+  transport:     { label: 'نقل',            icon: '🚛' },
+};
+
+export const dailyOperations = [
+  { id: 1, type: 'irrigation',    title: 'ري البيت المحمي رقم 3',    farm: 'مزرعة الوادي', field: 'بيت 3',    worker: 'أحمد محمد',   cost: 120, status: 'completed',  priority: 'high',   startTime: '06:00', duration: '2 ساعة', notes: 'تمت بنجاح' },
+  { id: 2, type: 'fertilization', title: 'تسميد الخيار الحقل الشمالي', farm: 'مزرعة الوادي', field: 'الشمال',  worker: 'سعيد علي',    cost: 280, status: 'completed',  priority: 'high',   startTime: '07:30', duration: '3 ساعات', notes: '' },
+  { id: 3, type: 'spraying',      title: 'رش مبيد فطري البيت 5',      farm: 'مزرعة النخيل', field: 'بيت 5',    worker: 'فهد ناصر',    cost: 95,  status: 'inProgress', priority: 'medium', startTime: '09:00', duration: '1.5 ساعة', notes: 'جارٍ حالياً' },
+  { id: 4, type: 'harvest',       title: 'حصاد الطماطم البيت 1',      farm: 'مزرعة الوادي', field: 'بيت 1',    worker: 'فريق الحصاد', cost: 340, status: 'inProgress', priority: 'high',   startTime: '08:00', duration: '4 ساعات', notes: '' },
+  { id: 5, type: 'maintenance',   title: 'صيانة نظام الري التنقيط',   farm: 'مزرعة النخيل', field: 'القطعة A', worker: 'علي حسن',     cost: 200, status: 'scheduled',  priority: 'medium', startTime: '11:00', duration: '2 ساعة', notes: '' },
+  { id: 6, type: 'planting',      title: 'زراعة شتلات فلفل البيت 7',  farm: 'مزرعة الوادي', field: 'بيت 7',    worker: 'محمد سالم',   cost: 150, status: 'scheduled',  priority: 'low',    startTime: '13:00', duration: '3 ساعات', notes: '' },
+  { id: 7, type: 'inspection',    title: 'فحص نظام التبريد بيت 2',    farm: 'مزرعة النخيل', field: 'بيت 2',    worker: 'خالد عمر',    cost: 50,  status: 'completed',  priority: 'medium', startTime: '05:30', duration: '1 ساعة', notes: 'لا مشكلات' },
+  { id: 8, type: 'irrigation',    title: 'ري الحقل الجنوبي',          farm: 'مزرعة الجنوب', field: 'الجنوب',   worker: 'يوسف أحمد',   cost: 80,  status: 'completed',  priority: 'medium', startTime: '05:00', duration: '1.5 ساعة', notes: '' },
+  { id: 9, type: 'transport',     title: 'نقل محصول الطماطم للسوق',   farm: 'مزرعة الوادي', field: '—',        worker: 'ناصر خالد',   cost: 120, status: 'scheduled',  priority: 'high',   startTime: '14:00', duration: '3 ساعات', notes: '' },
+  { id: 10, type: 'spraying',     title: 'رش سماد ورقي البيت 4',      farm: 'مزرعة النخيل', field: 'بيت 4',    worker: 'سعيد علي',    cost: 60,  status: 'completed',  priority: 'low',    startTime: '07:00', duration: '1 ساعة', notes: '' },
+];
+
+export const dailyOpStats = {
+  totalToday: 10,
+  completed: 5,
+  inProgress: 2,
+  scheduled: 3,
+  totalCost: 1495,
+  savedVsAvg: 215,
+};
+
+// ─── المهام وأوامر العمل ────────────────────────────────
+
+export const workOrders = [
+  { id: 1, title: 'إصلاح نظام التنقيط بيت 3',    farm: 'مزرعة الوادي', assignedTo: 'علي حسن',     priority: 'critical', status: 'inProgress', createdDate: '2026-05-14', dueDate: '2026-05-16', overdue: false, estimatedCost: 850,  description: 'انسداد في خطوط التنقيط يؤثر على 40% من النباتات', materials: [{ name: 'نبيبة تنقيط', qty: 50, unit: 'متر' }, { name: 'نوزل', qty: 20, unit: 'حبة' }] },
+  { id: 2, title: 'تركيب مضخة احتياطية',          farm: 'مزرعة النخيل', assignedTo: 'فهد ناصر',    priority: 'high',     status: 'pending',    createdDate: '2026-05-13', dueDate: '2026-05-20', overdue: false, estimatedCost: 1200, description: 'تركيب مضخة احتياطية لمنع أي انقطاع في الري', materials: [{ name: 'مضخة 2 حصان', qty: 1, unit: 'قطعة' }] },
+  { id: 3, title: 'صيانة الكاميرات الأمنية',       farm: 'مزرعة الوادي', assignedTo: 'محمد سالم',   priority: 'medium',   status: 'planned',    createdDate: '2026-05-12', dueDate: '2026-05-25', overdue: false, estimatedCost: 300,  description: 'تنظيف وضبط كاميرات القطاع الغربي', materials: [] },
+  { id: 4, title: 'تغيير فلاتر نظام التبريد',      farm: 'مزرعة النخيل', assignedTo: 'خالد عمر',    priority: 'high',     status: 'completed',  createdDate: '2026-05-10', dueDate: '2026-05-15', overdue: false, estimatedCost: 420,  description: 'تغيير الفلاتر الربع سنوية لبيوت التبريد', materials: [{ name: 'فلتر هواء', qty: 6, unit: 'قطعة' }] },
+  { id: 5, title: 'تركيب حساسات رطوبة التربة',    farm: 'مزرعة الجنوب', assignedTo: 'أحمد محمد',   priority: 'medium',   status: 'pending',    createdDate: '2026-05-11', dueDate: '2026-05-22', overdue: false, estimatedCost: 650,  description: 'تركيب 10 حساسات جديدة في الحقل الجنوبي', materials: [{ name: 'حساس رطوبة تربة', qty: 10, unit: 'قطعة' }] },
+  { id: 6, title: 'إصلاح سياج القطاع الشمالي',    farm: 'مزرعة الوادي', assignedTo: 'يوسف أحمد',   priority: 'low',      status: 'planned',    createdDate: '2026-05-09', dueDate: '2026-05-30', overdue: false, estimatedCost: 280,  description: 'إصلاح جزء تالف من السياج الخارجي', materials: [] },
+  { id: 7, title: 'تحديث برنامج وحدة التحكم',     farm: 'مزرعة النخيل', assignedTo: 'فهد ناصر',    priority: 'high',     status: 'pending',    createdDate: '2026-05-08', dueDate: '2026-05-14', overdue: true,  estimatedCost: 0,    description: 'تحديث فيرم وير وحدة التحكم الرئيسية للري الآلي', materials: [] },
+  { id: 8, title: 'تنظيف خزانات المياه الكبرى',   farm: 'مزرعة الوادي', assignedTo: 'فريق الصيانة', priority: 'medium',  status: 'completed',  createdDate: '2026-05-05', dueDate: '2026-05-12', overdue: false, estimatedCost: 470,  description: 'التنظيف والتعقيم الدوري لخزانات التخزين', materials: [] },
+];
+
+export const workOrderStats = {
+  total: 8, pending: 3, inProgress: 1, completed: 2, planned: 2, overdue: 1, totalCost: 4170,
+};
+
+// ─── المراسلات والمرفقات ────────────────────────────────
+
+export const messageThreads = [
+  { id: 1, title: 'فريق مزرعة الوادي', type: 'internal', lastMessage: 'تم الانتهاء من ري البيت 3', lastTime: '09:15', participants: 8, unread: 3, farm: 'مزرعة الوادي', attachmentsCount: 5 },
+  { id: 2, title: 'مورد البذور - الخليج',  type: 'supplier', lastMessage: 'الشحنة ستصل يوم الاثنين', lastTime: 'أمس', participants: 3, unread: 1, farm: 'عام', attachmentsCount: 2 },
+  { id: 3, title: 'فريق الصيانة',          type: 'internal', lastMessage: 'انتهينا من فحص التبريد', lastTime: 'أمس', participants: 4, unread: 0, farm: 'مزرعة النخيل', attachmentsCount: 1 },
+  { id: 4, title: 'عميل - سوق الخضار',    type: 'client',   lastMessage: 'نريد 200 كيلو طماطم غداً', lastTime: '2 يوم', participants: 2, unread: 2, farm: 'عام', attachmentsCount: 0 },
+  { id: 5, title: 'تنبيهات النظام',        type: 'system',   lastMessage: 'تنبيه: حساس الرطوبة بيت 5 خارج النطاق', lastTime: '3 يوم', participants: 1, unread: 0, farm: 'عام', attachmentsCount: 0 },
+  { id: 6, title: 'إدارة المزرعة',         type: 'internal', lastMessage: 'اجتماع تقييم الأسبوع القادم', lastTime: '4 يوم', participants: 5, unread: 0, farm: 'عام', attachmentsCount: 3 },
+];
+
+export const mockMessages: Record<number, Array<{ id: number; sender: string; text: string; time: string; isMe: boolean; attachment?: string }>> = {
+  1: [
+    { id: 1, sender: 'أحمد محمد',   text: 'صباح الخير، بدأنا ري البيت 3 في الموعد', time: '06:01', isMe: false },
+    { id: 2, sender: 'أنا',          text: 'ممتاز، راقب ضغط الخطوط جيداً', time: '06:05', isMe: true },
+    { id: 3, sender: 'أحمد محمد',   text: 'نعم، الضغط طبيعي 2.5 بار', time: '06:10', isMe: false },
+    { id: 4, sender: 'سعيد علي',    text: 'انتهينا من التسميد في الشمال', time: '09:15', isMe: false, attachment: 'تقرير_التسميد.pdf' },
+    { id: 5, sender: 'أنا',          text: 'شكراً، أرسل التقرير للإدارة', time: '09:18', isMe: true },
+  ],
+  2: [
+    { id: 1, sender: 'مورد البذور', text: 'السلام عليكم، بخصوص طلبكم رقم 2045', time: 'أمس 10:00', isMe: false },
+    { id: 2, sender: 'أنا',          text: 'أهلاً، نعم ننتظر تأكيد موعد الشحن', time: 'أمس 10:30', isMe: true },
+    { id: 3, sender: 'مورد البذور', text: 'الشحنة ستصل يوم الاثنين 19/5', time: 'أمس 11:00', isMe: false, attachment: 'فاتورة_2045.pdf' },
+  ],
+};
+
+// ─── الكاميرات والمراقبة ────────────────────────────────
+
+export const cameras = [
+  { id: 1, name: 'كاميرا البوابة الرئيسية',   location: 'البوابة',     farm: 'مزرعة الوادي', zone: 'الأمن',   status: 'active',          hasStream: true,  resolution: '4K',   type: 'ptz',   lastMaintenance: '2026-04-01', storageRetentionDays: 30, nightVision: true,  motionDetection: true  },
+  { id: 2, name: 'كاميرا البيت المحمي 1',      location: 'بيت 1 - داخل', farm: 'مزرعة الوادي', zone: 'الإنتاج', status: 'active',          hasStream: true,  resolution: '1080p', type: 'fixed', lastMaintenance: '2026-03-15', storageRetentionDays: 14, nightVision: true,  motionDetection: false },
+  { id: 3, name: 'كاميرا البيت المحمي 3',      location: 'بيت 3 - داخل', farm: 'مزرعة الوادي', zone: 'الإنتاج', status: 'active',          hasStream: true,  resolution: '1080p', type: 'fixed', lastMaintenance: '2026-03-15', storageRetentionDays: 14, nightVision: false, motionDetection: false },
+  { id: 4, name: 'كاميرا مخزن المعدات',        location: 'المخزن',       farm: 'مزرعة الوادي', zone: 'الأمن',   status: 'active',          hasStream: true,  resolution: '1080p', type: 'fixed', lastMaintenance: '2026-02-20', storageRetentionDays: 30, nightVision: true,  motionDetection: true  },
+  { id: 5, name: 'كاميرا الحقل الشمالي',       location: 'الشمال - خارج', farm: 'مزرعة النخيل', zone: 'الإنتاج', status: 'active',          hasStream: true,  resolution: '2K',    type: 'ptz',   lastMaintenance: '2026-04-10', storageRetentionDays: 14, nightVision: true,  motionDetection: true  },
+  { id: 6, name: 'كاميرا منطقة التعبئة',       location: 'التعبئة',      farm: 'مزرعة النخيل', zone: 'العمليات', status: 'active',         hasStream: true,  resolution: '1080p', type: 'fixed', lastMaintenance: '2026-03-01', storageRetentionDays: 7,  nightVision: false, motionDetection: false },
+  { id: 7, name: 'كاميرا البيت المكيف 7',      location: 'بيت 7 - داخل', farm: 'مزرعة النخيل', zone: 'الإنتاج', status: 'needsMaintenance', hasStream: false, resolution: '1080p', type: 'fixed', lastMaintenance: '2026-01-10', storageRetentionDays: 14, nightVision: true,  motionDetection: false },
+  { id: 8, name: 'كاميرا الحوض الجنوبي',       location: 'الجنوب',       farm: 'مزرعة الجنوب', zone: 'الأمن',   status: 'offline',         hasStream: false, resolution: '720p',  type: 'fixed', lastMaintenance: '2025-12-01', storageRetentionDays: 7,  nightVision: false, motionDetection: true  },
+];
+
+export const cameraStats = { total: 8, active: 6, offline: 1, needsMaintenance: 1, withStream: 6 };
+
+// ─── الري الكهربائي والمضخات ────────────────────────────
+
+export const pumps = [
+  { id: 1, name: 'مضخة الري الرئيسية 1',    location: 'محطة الري A', farm: 'مزرعة الوادي', status: 'running', flowRate: 80,  pressure: 3.2, powerKw: 15.0, dailyKwh: 90.0, dailyCost: 45.0, nextMaintenance: null },
+  { id: 2, name: 'مضخة الري الرئيسية 2',    location: 'محطة الري A', farm: 'مزرعة الوادي', status: 'idle',    flowRate: 80,  pressure: 0.0, powerKw: 0.0,  dailyKwh: 0.0,  dailyCost: 0.0,  nextMaintenance: '2026-06-01' },
+  { id: 3, name: 'مضخة البيوت المحمية',      location: 'محطة الري B', farm: 'مزرعة النخيل', status: 'running', flowRate: 45,  pressure: 2.8, powerKw: 7.5,  dailyKwh: 52.5, dailyCost: 26.25, nextMaintenance: null },
+  { id: 4, name: 'مضخة التنقيط الجنوبي',    location: 'محطة الري C', farm: 'مزرعة الجنوب', status: 'running', flowRate: 30,  pressure: 2.4, powerKw: 5.5,  dailyKwh: 38.5, dailyCost: 19.25, nextMaintenance: '2026-05-28' },
+  { id: 5, name: 'مضخة الاحتياطي',          location: 'محطة الري A', farm: 'مزرعة الوادي', status: 'off',     flowRate: 100, pressure: 0.0, powerKw: 0.0,  dailyKwh: 0.0,  dailyCost: 0.0,  nextMaintenance: null },
+];
+
+export const pumpStats = {
+  activePumps: 3,
+  totalFlowToday: 310,
+  totalKwhToday: 181.0,
+  totalCostToday: 90.5,
+};
+
+export const irrigationSchedules = [
+  { id: 1, name: 'جدول ري البيوت المحمية',  farm: 'مزرعة الوادي', field: 'بيوت 1-4',    pump: 'مضخة الري 1', startTime: '06:00', duration: '2 ساعة',   frequency: 'يومي',    waterVolume: 160, status: 'active'    },
+  { id: 2, name: 'جدول ري الخيار',          farm: 'مزرعة النخيل', field: 'بيت 5-6',     pump: 'مضخة البيوت', startTime: '07:30', duration: '1.5 ساعة', frequency: 'يومي',    waterVolume: 67,  status: 'active'    },
+  { id: 3, name: 'جدول ري الحقل الجنوبي',  farm: 'مزرعة الجنوب', field: 'الحقل الكامل', pump: 'مضخة التنقيط', startTime: '05:00', duration: '3 ساعات',  frequency: 'يومي',    waterVolume: 90,  status: 'active'    },
+  { id: 4, name: 'ري الفلفل المكيف',        farm: 'مزرعة النخيل', field: 'بيت 7',       pump: 'مضخة البيوت', startTime: '08:00', duration: '1 ساعة',   frequency: 'يومي',    waterVolume: 45,  status: 'scheduled' },
+  { id: 5, name: 'ري احتياطي الموسم',      farm: 'مزرعة الوادي', field: 'كل الحقول',   pump: 'مضخة الاحتياطي', startTime: '—',  duration: 'حسب الحاجة', frequency: 'طارئ',  waterVolume: 0,   status: 'paused'    },
+];
+
+// ─── الحساسات والقراءات ─────────────────────────────────
+
+export const sensors = [
+  { id: 1,  name: 'حساس درجة حرارة بيت 1',  type: 'temperature',   location: 'بيت 1', farm: 'مزرعة الوادي', status: 'normal', value: 24.5, unit: '°م', minOk: 18, maxOk: 32, lastUpdate: 'قبل 5 دقائق', batteryLevel: 87, alertMessage: null },
+  { id: 2,  name: 'حساس رطوبة بيت 1',        type: 'humidity',      location: 'بيت 1', farm: 'مزرعة الوادي', status: 'normal', value: 72,   unit: '%',  minOk: 60, maxOk: 85, lastUpdate: 'قبل 5 دقائق', batteryLevel: 87, alertMessage: null },
+  { id: 3,  name: 'حساس درجة حرارة بيت 3',  type: 'temperature',   location: 'بيت 3', farm: 'مزرعة الوادي', status: 'alert',  value: 37.2, unit: '°م', minOk: 18, maxOk: 32, lastUpdate: 'قبل 2 دقيقة', batteryLevel: 64, alertMessage: 'درجة الحرارة تجاوزت الحد الأعلى' },
+  { id: 4,  name: 'حساس رطوبة التربة قطعة A', type: 'soil_moisture', location: 'قطعة A', farm: 'مزرعة النخيل', status: 'alert',  value: 28,   unit: '%',  minOk: 40, maxOk: 80, lastUpdate: 'قبل 10 دقائق', batteryLevel: 45, alertMessage: 'رطوبة التربة منخفضة جداً' },
+  { id: 5,  name: 'حساس CO₂ بيت 5',          type: 'co2',           location: 'بيت 5', farm: 'مزرعة النخيل', status: 'normal', value: 820,  unit: 'ppm',minOk: 400, maxOk: 1200, lastUpdate: 'قبل 8 دقائق', batteryLevel: 92, alertMessage: null },
+  { id: 6,  name: 'حساس الإضاءة البيت 7',    type: 'light',         location: 'بيت 7', farm: 'مزرعة النخيل', status: 'normal', value: 45000, unit: 'lux', minOk: 20000, maxOk: 80000, lastUpdate: 'قبل 3 دقائق', batteryLevel: 78, alertMessage: null },
+  { id: 7,  name: 'حساس pH تربة الشمال',      type: 'ph',            location: 'الشمال', farm: 'مزرعة النخيل', status: 'alert',  value: 4.8,  unit: 'pH', minOk: 5.5, maxOk: 7.5, lastUpdate: 'قبل 15 دقيقة', batteryLevel: 33, alertMessage: 'حموضة التربة مرتفعة (pH منخفض)' },
+  { id: 8,  name: 'حساس EC الري التنقيط',    type: 'ec',            location: 'محطة B', farm: 'مزرعة الوادي', status: 'normal', value: 2.1,  unit: 'mS/cm', minOk: 1.5, maxOk: 3.0, lastUpdate: 'قبل 4 دقائق', batteryLevel: 91, alertMessage: null },
+  { id: 9,  name: 'حساس الرياح الخارجي',     type: 'wind',          location: 'السطح',  farm: 'مزرعة الوادي', status: 'normal', value: 12,   unit: 'كم/ساعة', minOk: 0, maxOk: 40, lastUpdate: 'قبل 1 دقيقة', batteryLevel: 100, alertMessage: null },
+  { id: 10, name: 'حساس درجة حرارة الجنوب',  type: 'temperature',   location: 'الجنوب', farm: 'مزرعة الجنوب', status: 'normal', value: 29.8, unit: '°م', minOk: 18, maxOk: 35, lastUpdate: 'قبل 6 دقائق', batteryLevel: 72, alertMessage: null },
+  { id: 11, name: 'حساس رطوبة التربة B',      type: 'soil_moisture', location: 'قطعة B', farm: 'مزرعة الجنوب', status: 'normal', value: 62,   unit: '%',  minOk: 40, maxOk: 80, lastUpdate: 'قبل 9 دقائق', batteryLevel: 58, alertMessage: null },
+  { id: 12, name: 'حساس CO₂ بيت 2',          type: 'co2',           location: 'بيت 2', farm: 'مزرعة الوادي', status: 'offline', value: 0, unit: 'ppm', minOk: 400, maxOk: 1200, lastUpdate: 'منذ 3 ساعات', batteryLevel: 0, alertMessage: null },
+];
+
+export const sensorStats = { total: 12, normal: 8, alert: 3, offline: 1 };
+
+// ─── الصيانة والأعطال ───────────────────────────────────
+
+export const maintenanceBreakdowns = [
+  { id: 1, equipment: 'مضخة الري الرئيسية 1', farm: 'مزرعة الوادي', severity: 'high',     status: 'resolved',   description: 'توقف مفاجئ بسبب ارتفاع الضغط',         reportedDate: '2026-05-10', resolvedDate: '2026-05-11', downtimeHrs: 6,  assignedTo: 'علي حسن',     repairCost: 450  },
+  { id: 2, equipment: 'نظام التبريد بيت 7',   farm: 'مزرعة النخيل', severity: 'critical', status: 'inProgress', description: 'عطل في وحدة الضخ الرئيسية للتبريد',     reportedDate: '2026-05-14', resolvedDate: null,         downtimeHrs: 18, assignedTo: 'فهد ناصر',    repairCost: 1800 },
+  { id: 3, equipment: 'كاميرا بيت 7',         farm: 'مزرعة النخيل', severity: 'medium',   status: 'open',       description: 'انقطاع في الاتصال وعدم استجابة',        reportedDate: '2026-05-13', resolvedDate: null,         downtimeHrs: null, assignedTo: null,          repairCost: 200  },
+  { id: 4, equipment: 'نظام الري التنقيط B',  farm: 'مزرعة الوادي', severity: 'high',     status: 'open',       description: 'انسداد في خطوط التنقيط الرئيسية',       reportedDate: '2026-05-15', resolvedDate: null,         downtimeHrs: null, assignedTo: 'علي حسن',     repairCost: 320  },
+  { id: 5, equipment: 'مولد الكهرباء الاحتياطي', farm: 'مزرعة الجنوب', severity: 'medium', status: 'resolved', description: 'لم يبدأ التشغيل عند انقطاع التيار',    reportedDate: '2026-05-08', resolvedDate: '2026-05-09', downtimeHrs: 4,  assignedTo: 'خالد عمر',    repairCost: 150  },
+  { id: 6, equipment: 'حساس pH قطعة الشمال',  farm: 'مزرعة النخيل', severity: 'low',      status: 'open',       description: 'قراءات غير دقيقة تحتاج معايرة',         reportedDate: '2026-05-12', resolvedDate: null,         downtimeHrs: null, assignedTo: null,          repairCost: 50   },
+];
+
+export const preventiveSchedules = [
+  { id: 1, equipment: 'مضخات الري الرئيسية',  farm: 'مزرعة الوادي', task: 'فحص الزيت والحزام والتشحيم',         status: 'scheduled',  nextDate: '2026-06-01', frequency: 'شهري',      assignedTo: 'علي حسن',     estimatedCost: 200, estimatedDurationHrs: 3, lastCompleted: '2026-05-01' },
+  { id: 2, equipment: 'نظام التبريد بيت 1-4', farm: 'مزرعة النخيل', task: 'تغيير فلاتر الهواء وتنظيف الوحدات', status: 'scheduled',  nextDate: '2026-06-15', frequency: 'ربع سنوي', assignedTo: 'فهد ناصر',    estimatedCost: 650, estimatedDurationHrs: 8, lastCompleted: '2026-03-15' },
+  { id: 3, equipment: 'خطوط الري التنقيط',    farm: 'مزرعة الوادي', task: 'تنظيف بالضغط وفحص النبيبات',         status: 'overdue',    nextDate: '2026-05-10', frequency: 'شهري',      assignedTo: 'محمد سالم',   estimatedCost: 120, estimatedDurationHrs: 4, lastCompleted: '2026-04-10' },
+  { id: 4, equipment: 'الكاميرات الأمنية',    farm: 'مزرعة الوادي', task: 'تنظيف العدسات وفحص الاتصالات',       status: 'scheduled',  nextDate: '2026-06-20', frequency: 'ربع سنوي', assignedTo: null,           estimatedCost: 80,  estimatedDurationHrs: 2, lastCompleted: '2026-03-20' },
+  { id: 5, equipment: 'المولد الكهربائي',      farm: 'مزرعة الجنوب', task: 'تغيير الزيت وفحص البطارية',          status: 'completed',  nextDate: '2026-08-01', frequency: 'نصف سنوي', assignedTo: 'خالد عمر',    estimatedCost: 350, estimatedDurationHrs: 3, lastCompleted: '2026-05-01' },
+  { id: 6, equipment: 'الحساسات الإلكترونية', farm: 'مزرعة النخيل', task: 'معايرة وتحديث الفيرم وير',            status: 'inProgress', nextDate: '2026-05-20', frequency: 'نصف سنوي', assignedTo: 'فهد ناصر',    estimatedCost: 200, estimatedDurationHrs: 6, lastCompleted: '2025-11-20' },
+  { id: 7, equipment: 'خزانات المياه',         farm: 'مزرعة الوادي', task: 'التنظيف والتعقيم الكامل',             status: 'completed',  nextDate: '2026-08-05', frequency: 'ربع سنوي', assignedTo: 'فريق الصيانة', estimatedCost: 500, estimatedDurationHrs: 6, lastCompleted: '2026-05-05' },
+  { id: 8, equipment: 'لوحات التحكم الكهربائية', farm: 'مزرعة النخيل', task: 'فحص الاتصالات والتوصيلات',       status: 'scheduled',  nextDate: '2026-07-01', frequency: 'سنوي',      assignedTo: null,           estimatedCost: 400, estimatedDurationHrs: 4, lastCompleted: '2025-07-01' },
+];
+
+export const maintenanceStats = {
+  openBreakdowns: 3, resolvedThisMonth: 3, totalCostMonth: 2970,
+  avgDowntimeHrs: 8.2, preventiveOnTime: 6, preventiveOverdue: 1, preventiveCompliance: 85,
+};
+
+// ─── تحليل الهدر وتقليل النفقات ────────────────────────
+
+export const wasteCategories = [
+  { id: 'water',     name: 'هدر المياه',              icon: '💧', priority: 'high',   description: 'زيادة في استهلاك المياه عن المعدل المثالي',             monthlyLoss: 3200, savingPotential: 2200, actions: ['تحسين توقيت الري', 'فحص التسربات', 'كاليبريشن الحساسات'] },
+  { id: 'energy',    name: 'هدر الطاقة الكهربائية',   icon: '⚡', priority: 'high',   description: 'استهلاك طاقة زائد في تشغيل المضخات والتبريد',          monthlyLoss: 2800, savingPotential: 1900, actions: ['جدولة التشغيل في أوقات الذروة المنخفضة', 'صيانة دورية للمحركات'] },
+  { id: 'fertilizer',name: 'هدر الأسمدة',             icon: '🧪', priority: 'medium', description: 'استخدام أسمدة أكثر من الاحتياج الفعلي للنبات',         monthlyLoss: 1800, savingPotential: 1200, actions: ['تحليل التربة الدوري', 'برامج تسميد دقيقة'] },
+  { id: 'labor',     name: 'هدر وقت العمالة',         icon: '👷', priority: 'medium', description: 'ساعات عمل غير منتجة وتنقلات زائدة بين المناطق',       monthlyLoss: 1500, savingPotential: 900,  actions: ['تحسين جداول العمل', 'تقليل التنقلات'] },
+  { id: 'produce',   name: 'خسارة المحصول',           icon: '🌾', priority: 'high',   description: 'محصول تالف أو منخفض الجودة بسبب تأخر الحصاد أو التخزين', monthlyLoss: 4500, savingPotential: 3200, actions: ['جدولة الحصاد بدقة', 'تحسين شروط التخزين'] },
+  { id: 'pesticide', name: 'هدر المبيدات',            icon: '🫧', priority: 'low',    description: 'رش زائد عن الحاجة أو في توقيت غير مثالي',              monthlyLoss: 900,  savingPotential: 600,  actions: ['مراقبة الآفات بالحساسات', 'رش موجه'] },
+];
+
+export const wasteTotalLoss = wasteCategories.reduce((s, c) => s + c.monthlyLoss, 0);
+export const wasteSavingPotential = wasteCategories.reduce((s, c) => s + c.savingPotential, 0);
+
+export const wasteMonthlyTrend = [
+  { month: 'يناير', total: 17200, saved: 4800 },
+  { month: 'فبراير', total: 15900, saved: 5200 },
+  { month: 'مارس',   total: 16400, saved: 6100 },
+  { month: 'أبريل',  total: 15100, saved: 6800 },
+  { month: 'مايو',   total: 14700, saved: 8100 },
+];
+
+// ─── مركز التنبيهات ─────────────────────────────────────
+
+export const alertsList = [
+  { id: 1,  type: 'sensor',      severity: 'critical', title: 'درجة حرارة مرتفعة - بيت 3',      message: 'درجة حرارة البيت المحمي 3 وصلت 37.2°م وتجاوزت الحد الأعلى (32°م)',     farm: 'مزرعة الوادي', timestamp: 'اليوم 08:14', source: 'حساس درجة حرارة بيت 3',       actionRequired: 'تشغيل نظام التبريد فوراً ومراجعة الوضع', status: 'active'   },
+  { id: 2,  type: 'sensor',      severity: 'critical', title: 'رطوبة تربة منخفضة جداً - قطعة A', message: 'رطوبة التربة انخفضت إلى 28% أقل من الحد المثالي (40%)',                   farm: 'مزرعة النخيل', timestamp: 'اليوم 07:45', source: 'حساس رطوبة التربة A',         actionRequired: 'الري الفوري للقطعة A', status: 'active'   },
+  { id: 3,  type: 'maintenance',  severity: 'high',     title: 'عطل نظام تبريد بيت 7',            message: 'نظام التبريد في البيت المحمي 7 متوقف عن العمل منذ 18 ساعة',             farm: 'مزرعة النخيل', timestamp: 'أمس 14:30',   source: 'نظام التبريد بيت 7',          actionRequired: 'إرسال فريق الصيانة فوراً', status: 'active'   },
+  { id: 4,  type: 'pump',        severity: 'high',     title: 'انسداد في خط ري التنقيط',          message: 'ضغط غير طبيعي في خط التنقيط B يشير إلى انسداد محتمل',                  farm: 'مزرعة الوادي', timestamp: 'اليوم 06:30', source: 'مضخة الري 1',                actionRequired: 'فحص وإصلاح خطوط التنقيط B', status: 'active'   },
+  { id: 5,  type: 'sensor',      severity: 'medium',   title: 'حموضة التربة مرتفعة - الشمال',    message: 'pH التربة في القطعة الشمالية 4.8 (الحد المقبول 5.5-7.5)',                farm: 'مزرعة النخيل', timestamp: 'أمس 16:00',   source: 'حساس pH الشمالي',             actionRequired: 'إضافة جير لتعديل الحموضة', status: 'active'   },
+  { id: 6,  type: 'maintenance',  severity: 'medium',   title: 'صيانة وقائية متأخرة - التنقيط',  message: 'موعد صيانة خطوط التنقيط تجاوز تاريخه منذ 5 أيام',                       farm: 'مزرعة الوادي', timestamp: '5 أيام',      source: 'جدول الصيانة الوقائية',       actionRequired: 'جدولة صيانة خطوط التنقيط', status: 'active'   },
+  { id: 7,  type: 'sensor',      severity: 'medium',   title: 'بطارية حساس pH على وشك النفاد',   message: 'مستوى البطارية 33% سيتوقف الحساس خلال أسبوع',                           farm: 'مزرعة النخيل', timestamp: 'أمس',         source: 'حساس pH الشمالي',             actionRequired: 'تغيير البطارية', status: 'active'   },
+  { id: 8,  type: 'weather',     severity: 'medium',   title: 'توقع موجة حر غداً',               message: 'توقعات الطقس تشير لدرجات حرارة تصل 44°م غداً',                          farm: 'عام',           timestamp: 'اليوم 10:00', source: 'خدمة الطقس',                  actionRequired: 'التحضير لتشغيل التبريد بكامل طاقته', status: 'active' },
+  { id: 9,  type: 'irrigation',  severity: 'low',      title: 'جدول الري منتهي - الموسم',        message: 'انتهى جدول الري الموسمي للبيت 7، يجب إنشاء جدول جديد',                  farm: 'مزرعة النخيل', timestamp: '2 أيام',      source: 'نظام الري',                   actionRequired: 'إنشاء جدول ري جديد للموسم القادم', status: 'active' },
+  { id: 10, type: 'financial',   severity: 'low',      title: 'تجاوز ميزانية الكهرباء',          message: 'تجاوز استهلاك الكهرباء الشهري بنسبة 12% عن الميزانية',                  farm: 'مزرعة الوادي', timestamp: '3 أيام',      source: 'نظام المحاسبة',               actionRequired: 'مراجعة جداول تشغيل المضخات', status: 'active'  },
+  { id: 11, type: 'pest',        severity: 'high',     title: 'اشتباه بإصابة حشرية - بيت 5',    message: 'رصد أعراض على نباتات الخيار في بيت 5 تشير لإصابة بحشرة التربس',           farm: 'مزرعة النخيل', timestamp: 'أمس',         source: 'فريق الفحص',                  actionRequired: 'إجراء فحص دقيق وبدء معالجة فورية', status: 'resolved' },
+  { id: 12, type: 'system',      severity: 'low',      title: 'انقطاع كاميرا الجنوب',            message: 'الكاميرا رقم 8 في الحوض الجنوبي غير متصلة',                             farm: 'مزرعة الجنوب', timestamp: '4 أيام',      source: 'نظام المراقبة',               actionRequired: 'فحص الاتصال والطاقة للكاميرا', status: 'resolved' },
+];
+
+export const alertStats = { total: 12, critical: 2, high: 3, medium: 4, low: 3, resolvedToday: 2 };

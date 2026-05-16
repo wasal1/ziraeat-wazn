@@ -35,6 +35,16 @@ const NAV: NavItem[] = [
   // ─── التحليل
   { id: 'analysis',      label: 'التحليل الذكي',               icon: '🤖',  live: true,  group: 'التحليل'           },
   { id: 'reports',       label: 'التقارير',                    icon: '📊',  live: true                              },
+  // ─── المتابعة الذكية
+  { id: 'dailyops',     label: 'العمليات اليومية',             icon: '📋',  live: true,  group: 'المتابعة الذكية'  },
+  { id: 'tasks',        label: 'المهام وأوامر العمل',           icon: '✅',  live: true                              },
+  { id: 'messages',     label: 'المراسلات والمرفقات',           icon: '💬',  live: true                              },
+  { id: 'cameras',      label: 'الكاميرات والمراقبة',           icon: '📷',  live: true                              },
+  { id: 'pumps',        label: 'الري الكهربائي والمضخات',       icon: '⚡',  live: true                              },
+  { id: 'sensors',      label: 'الحساسات والقراءات',            icon: '📡',  live: true                              },
+  { id: 'maintenance',  label: 'الصيانة والأعطال',              icon: '🔧',  live: true                              },
+  { id: 'waste',        label: 'تحليل الهدر والنفقات',          icon: '💡',  live: true                              },
+  { id: 'alerts',       label: 'مركز التنبيهات',                icon: '🔔',  live: true                              },
   // ─── النظام
   { id: 'subscription',  label: 'الاشتراك والباقات',           icon: '💳',  live: true,  group: 'النظام'            },
   { id: 'settings',      label: 'الإعدادات',                   icon: '⚙️',  live: true                              },
