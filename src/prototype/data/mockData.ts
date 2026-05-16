@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════
 
 export const PLATFORM = {
-  name: 'منصة زراعة وزن الذكية',
+  name: 'منصة وزن الزراعية الذكية',
   tagline: 'إدارة وتحليل المحاصيل الزراعية من الزراعة إلى الربحية',
   farm: 'مزرعة النخيل',
   location: 'الرياض — حرة رهاط',
@@ -995,7 +995,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     id: 'starter',
     name: 'باقة البداية السنوية',
     tagline: 'للمزارع الصغيرة',
-    price: 1500,
+    price: 3000,
     color: '#16a34a',
     accentClass: 'green',
     limits: { farms: 1, users: 3, fields: 5, greenhouses: 5, activeCycles: 10, aiReports: 2 },
@@ -1018,7 +1018,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     id: 'professional',
     name: 'الباقة الاحترافية السنوية',
     tagline: 'للمزارع المتوسطة',
-    price: 4800,
+    price: 9600,
     color: '#0284c7',
     accentClass: 'sky',
     badge: 'الأكثر شيوعاً',
@@ -1040,7 +1040,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     id: 'company',
     name: 'باقة الشركات السنوية',
     tagline: 'للشركات الزراعية',
-    price: 12000,
+    price: 36000,
     color: '#7c3aed',
     accentClass: 'purple',
     limits: { farms: 10, users: 30, fields: 100, greenhouses: 150, activeCycles: 250, aiReports: 40 },
@@ -1088,7 +1088,7 @@ export const currentSubscription = {
   daysRemaining: 244,
   autoRenew:    true,
   billingCycle: 'سنوي',
-  paidAmount:   4800,
+  paidAmount:   9600,
   usage: {
     farms:         2,
     users:         7,
@@ -1103,7 +1103,7 @@ export const currentSubscription = {
 // ─── Subscription Invoices ──────────────────────────────
 
 export const subscriptionInvoices = [
-  { id: 'INV-2026-001', date: '2026-01-15', plan: 'الباقة الاحترافية السنوية', amount: 4800, status: 'مدفوعة',  method: 'بطاقة ائتمان' },
+  { id: 'INV-2026-001', date: '2026-01-15', plan: 'الباقة الاحترافية السنوية', amount: 9600, status: 'مدفوعة',  method: 'بطاقة ائتمان' },
   { id: 'INV-2025-004', date: '2025-10-02', plan: 'إضافة 5 تقارير ذكاء اصطناعي', amount: 250, status: 'مدفوعة', method: 'بطاقة ائتمان' },
   { id: 'INV-2025-001', date: '2025-01-15', plan: 'الباقة الاحترافية السنوية', amount: 4500, status: 'مدفوعة',  method: 'تحويل بنكي'  },
   { id: 'INV-2024-003', date: '2024-06-01', plan: 'إضافة 10 تقارير ذكاء اصطناعي', amount: 480, status: 'مدفوعة', method: 'بطاقة ائتمان' },

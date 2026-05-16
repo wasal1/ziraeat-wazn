@@ -18,8 +18,11 @@ export default function AppLayout({ current, onNav, children }: Props) {
   };
 
   const handleToggle = () => {
-    setCollapsed((c) => !c);
-    setMobileOpen((o) => !o);
+    if (window.innerWidth < 768) {
+      setMobileOpen((o) => !o);
+    } else {
+      setCollapsed((c) => !c);
+    }
   };
 
   return (
