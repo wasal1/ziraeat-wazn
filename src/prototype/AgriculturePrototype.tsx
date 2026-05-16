@@ -43,7 +43,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const { t, lang, setLang, dir } = useLang();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('admin@wazan.com');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('Admin@1234');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
