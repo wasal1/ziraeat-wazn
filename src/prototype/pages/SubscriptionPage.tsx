@@ -11,8 +11,6 @@ import {
   moduleAccessMap,
   type PlanId,
 } from '../data/mockData';
-import { useLang } from '../contexts/LangContext';
-
 // ─── helpers ────────────────────────────────────────────
 
 const STATUS_CFG: Record<string, { label: string; cls: string; icon: string }> = {
@@ -68,7 +66,7 @@ function UsageMeter({
           <span className="text-2xl">{icon}</span>
           <span className="text-sm font-semibold text-gray-700">{label}</span>
         </div>
-        {over && <span className="text-[10px] bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full font-semibold">{t('sub.nearLimit')}</span>}
+        {over && <span className="text-[10px] bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full font-semibold">قريب من الحد</span>}
       </div>
       <div className="flex items-end gap-1 mb-2">
         <span className="text-3xl font-extrabold text-gray-800">{used}</span>
@@ -89,13 +87,7 @@ function UsageMeter({
 }
 
 export default function SubscriptionPage() {
-  const { t } = useLang();
-  const TABS = [
-    { value: 'نظرة عامة',       label: 'sub.tabOverview'  },
-    { value: 'مقارنة الباقات',  label: 'sub.tabCompare'   },
-    { value: 'الفواتير',        label: 'sub.tabInvoices'  },
-    { value: 'الإضافات',        label: 'sub.tabAddons'    },
-  ];
+  const TABS = ['نظرة عامة', 'مقارنة الباقات', 'الفواتير', 'الإضافات'];
   const [tab, setTab]       = useState('نظرة عامة');
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -111,12 +103,12 @@ export default function SubscriptionPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title={t('page.subscription.title')}
-        subtitle={t('page.subscription.sub')}
+        title="الاشتراك والباقات"
+        subtitle="إدارة اشتراكك وتفاصيل الباقة"
         action={
           <div className="flex gap-2">
-            <ActionButton variant="secondary" size="sm" icon="🔄">{t('sub.renew')}</ActionButton>
-            <ActionButton size="sm" icon="⬆️">{t('sub.upgrade')}</ActionButton>
+            <ActionButton variant="secondary" size="sm" icon="🔄">تجديد الاشتراك</ActionButton>
+            <ActionButton size="sm" icon="⬆️">ترقية الباقة</ActionButton>
           </div>
         }
       />
@@ -148,10 +140,9 @@ export default function SubscriptionPage() {
           {/* Dates */}
           <div className="grid grid-cols-3 gap-4 md:gap-6">
             {[
-              { label: t('sub.startDate'), value: currentSubscription.startDate },
-              { label: t('sub.endDate'),   value: currentSubscription.endDate   },
-              { label: t('sub.daysLeft'),  value: currentSubscription.daysRemaining + ' ' + t('sub.day'),
-                highlight: daysUrgent },
+              { label: 'تاريخ البدء',       value: currentSubscription.startDate },
+              { label: 'تاريخ الانتهاء',    value: currentSubscription.endDate   },
+              { label: 'الأيام المتبقية',   value: currentSubscription.daysRemaining + ' يوم', highlight: daysUrgent },
             ].map((item) => (
               <div key={item.label} className="text-center">
                 <p className={`text-xl font-extrabold ${item.highlight ? 'text-red-200' : 'text-white'}`}>
@@ -168,10 +159,10 @@ export default function SubscriptionPage() {
               {plan.price !== null ? plan.price.toLocaleString('ar-SA') : 'مخصص'}
             </p>
             <p className="text-[11px] text-white/60 mt-0.5">
-              {plan.price !== null ? t('sub.riyalYear') : 'حسب الاتفاقية'}
+              {plan.price !== null ? 'ريال / سنة' : 'حسب الاتفاقية'}
             </p>
             <p className="text-[10px] text-white/50 mt-1">
-              {currentSubscription.autoRenew ? t('sub.autoRenew') : t('sub.noAutoRenew')}
+              {currentSubscription.autoRenew ? 'تجديد تلقائي' : 'بدون تجديد تلقائي'}
             </p>
           </div>
         </div>
@@ -184,7 +175,7 @@ export default function SubscriptionPage() {
               اشتراكك ينتهي خلال {currentSubscription.daysRemaining} يوماً — جدد الآن لتجنب انقطاع الخدمة.
             </p>
             <button className="mr-auto text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap">
-              {t('sub.renewNow')}
+              جدد الآن
             </button>
           </div>
         )}
@@ -200,9 +191,9 @@ export default function SubscriptionPage() {
       {/* ─── Tabs ──────────────────────────────────────── */}
       <div className="flex gap-1 bg-gray-100/70 rounded-xl p-1 w-fit">
         {TABS.map((tb) => (
-          <button key={tb.value} onClick={() => setTab(tb.value)}
-            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === tb.value ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >{t(tb.label)}</button>
+          <button key={tb} onClick={() => setTab(tb)}
+            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === tb ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >{tb}</button>
         ))}
       </div>
 
@@ -210,7 +201,7 @@ export default function SubscriptionPage() {
       {tab === 'نظرة عامة' && (
         <div className="space-y-5">
           {/* Usage meters */}
-          <GlassCard title={t('sub.usageTitle')} subtitle={t('sub.vsLimits')} accent="green">
+          <GlassCard title="استخدامك الحالي" subtitle="مقارنة بحدود باقتك" accent="green">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <UsageMeter label="المزارع"          icon="🌾" used={u.farms}        limit={planLimits.farms}        color="green"  />
               <UsageMeter label="المستخدمون"       icon="👤" used={u.users}        limit={planLimits.users}        color="sky"    />
@@ -231,20 +222,20 @@ export default function SubscriptionPage() {
               </div>
               <div className="flex gap-2">
                 <span className="text-xs bg-purple-100 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-full font-semibold">
-                  {totalAI - u.aiReports} {t('sub.aiReports')}
+                  {totalAI - u.aiReports} تقرير متبقٍ
                 </span>
                 <button
                   onClick={() => setTab('الإضافات')}
                   className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-full font-semibold hover:bg-purple-700 transition-colors"
                 >
-                  {t('sub.addMore')}
+                  شراء المزيد
                 </button>
               </div>
             </div>
           </GlassCard>
 
           {/* Module access */}
-          <GlassCard title={t('sub.modulesTitle')} subtitle={t('sub.byPlan')} accent="sky">
+          <GlassCard title="الوحدات المفعّلة" subtitle="وفق باقتك الحالية" accent="sky">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               {modules.map((m) => (
                 <div key={m} className="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2">
@@ -263,13 +254,13 @@ export default function SubscriptionPage() {
               <div className="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-3">
                 <span className="text-lg">⬆️</span>
                 <p className="text-xs text-amber-700 font-medium flex-1">
-                  {plan.lockedModules!.length} {t('sub.lockedModules')}
+                  {plan.lockedModules!.length} وحدة غير مفعّلة في باقتك
                 </p>
                 <button
                   onClick={() => setTab('مقارنة الباقات')}
                   className="text-xs bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-700 transition-colors whitespace-nowrap"
                 >
-                  {t('sub.compareBtn')}
+                  مقارنة الباقات
                 </button>
               </div>
             )}
