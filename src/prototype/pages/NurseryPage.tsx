@@ -7,6 +7,7 @@ import StatusBadge from '../components/StatusBadge';
 import StatCard from '../components/StatCard';
 import { nurseryBatches, nurseryStats, germinationChart } from '../data/mockData';
 import { BarChartMock } from '../components/MockChart';
+import { useLang } from '../contexts/LangContext';
 
 const STATUS_CFG: Record<string, { bg: string; icon: string; progress: string }> = {
   'جاهزة للنقل': { bg: 'bg-green-50 border-green-200',  icon: '✅', progress: 'bg-green-500'  },
@@ -25,6 +26,7 @@ function stageIndex(status: string) {
 }
 
 export default function NurseryPage() {
+  const { t } = useLang();
   const [selected, setSelected] = useState<number | null>(null);
 
   const active     = nurseryBatches.filter((b) => b.status !== 'تم النقل');
@@ -33,28 +35,28 @@ export default function NurseryPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="إدارة الشتلات"
-        subtitle="دفعات الشتلات ونسب الإنبات وجداول النقل"
-        action={<ActionButton size="sm" icon="➕">دفعة جديدة</ActionButton>}
+        title={t('page.nursery.title')}
+        subtitle={t('page.nursery.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('nursery.newBatch')}</ActionButton>}
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="دفعات نشطة"          value={nurseryStats.activeBatches}              unit=""     icon="🌱" color="green"  />
-        <StatCard label="جاهزة للنقل"         value={nurseryStats.readyToTransfer}             unit=""     icon="✅" color="sky"    />
-        <StatCard label="متوسط نسبة الإنبات"  value={nurseryStats.avgGerminationRate.toFixed(1)} unit="%"  icon="📊" color="amber"  />
-        <StatCard label="تكلفة الشتلات / شهر" value={nurseryStats.totalSeedlingsCost}          unit="ريال" icon="💰" color="purple" />
+        <StatCard label={t('nursery.activeBatches')}   value={nurseryStats.activeBatches}              unit=""                    icon="🌱" color="green"  />
+        <StatCard label={t('nursery.readyToTransfer')} value={nurseryStats.readyToTransfer}             unit=""                    icon="✅" color="sky"    />
+        <StatCard label={t('nursery.avgGermination')}  value={nurseryStats.avgGerminationRate.toFixed(1)} unit="%"                icon="📊" color="amber"  />
+        <StatCard label={t('nursery.monthlyCost')}     value={nurseryStats.totalSeedlingsCost}          unit={t('common.currency')} icon="💰" color="purple" />
       </div>
 
       {/* Germination chart */}
-      <GlassCard title="نسب الإنبات — الدفعات الحالية" subtitle="%" accent="green">
+      <GlassCard title={t('nursery.germinationChart')} subtitle="%" accent="green">
         <BarChartMock data={germinationChart} xKey="batch" yKey="rate" color="#16a34a" height={180} label="%" />
       </GlassCard>
 
       {/* Batches Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Active batches */}
-        <GlassCard title="الدفعات النشطة" subtitle={`${active.length} دفعة`} accent="green">
+        <GlassCard title={t('nursery.activeBatchesList')} subtitle={`${active.length} دفعة`} accent="green">
           <div className="space-y-3">
             {active.map((b) => {
               const cfg = STATUS_CFG[b.status] ?? STATUS_CFG['في الإنبات'];
@@ -75,7 +77,7 @@ export default function NurseryPage() {
                         <StatusBadge status={b.status} size="xs" />
                         {b.daysToTransfer > 0 && (
                           <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
-                            نقل بعد {b.daysToTransfer} أيام
+                            {t('nursery.transferAfter')} {b.daysToTransfer} {t('nursery.days')}
                           </span>
                         )}
                       </div>
@@ -100,10 +102,10 @@ export default function NurseryPage() {
                   {/* Stats Row */}
                   <div className="grid grid-cols-4 gap-2">
                     {[
-                      { label: 'البذور',    value: b.totalSeeds.toLocaleString('ar-SA') },
-                      { label: 'أنبتت',     value: b.germinated.toLocaleString('ar-SA') },
-                      { label: 'نسبة الإنبات', value: germinatedPct + '%' },
-                      { label: 'التكلفة',   value: b.totalCost.toLocaleString('ar-SA') + ' ر' },
+                      { label: t('nursery.seeds'),           value: b.totalSeeds.toLocaleString('ar-SA') },
+                      { label: t('nursery.germinated'),      value: b.germinated.toLocaleString('ar-SA') },
+                      { label: t('nursery.germinationRate'), value: germinatedPct + '%' },
+                      { label: t('common.cost'),             value: b.totalCost.toLocaleString('ar-SA') + ' ر' },
                     ].map((s) => (
                       <div key={s.label} className="text-center bg-white/60 rounded-lg py-1.5">
                         <p className="text-xs font-bold text-gray-800">{s.value}</p>
@@ -115,13 +117,13 @@ export default function NurseryPage() {
                   {/* Detail expand */}
                   {selected === b.id && (
                     <div className="mt-3 pt-3 border-t border-gray-200/60 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-gray-600">
-                      <div><span className="text-gray-400">تاريخ البذر:</span> {b.seedDate}</div>
-                      <div><span className="text-gray-400">تاريخ الإنبات:</span> {b.germinationDate}</div>
-                      <div><span className="text-gray-400">موعد النقل:</span> <span className="font-semibold text-green-700">{b.transferDate}</span></div>
-                      <div><span className="text-gray-400">الوجهة:</span> {b.destination}</div>
-                      <div><span className="text-gray-400">المزرعة:</span> {b.farm}</div>
-                      <div><span className="text-gray-400">الصوانٍ:</span> {b.tray}</div>
-                      <div><span className="text-gray-400">تكلفة الشتلة:</span> {b.costPerSeedling} ريال</div>
+                      <div><span className="text-gray-400">{t('nursery.seedDate')}</span> {b.seedDate}</div>
+                      <div><span className="text-gray-400">{t('nursery.germinationDate')}</span> {b.germinationDate}</div>
+                      <div><span className="text-gray-400">{t('nursery.transferDate')}</span> <span className="font-semibold text-green-700">{b.transferDate}</span></div>
+                      <div><span className="text-gray-400">{t('nursery.destination')}</span> {b.destination}</div>
+                      <div><span className="text-gray-400">{t('common.farm')}</span> {b.farm}</div>
+                      <div><span className="text-gray-400">{t('nursery.tray')}</span> {b.tray}</div>
+                      <div><span className="text-gray-400">{t('nursery.costPerSeedling')}</span> {b.costPerSeedling} ريال</div>
                     </div>
                   )}
                 </div>
@@ -131,7 +133,7 @@ export default function NurseryPage() {
         </GlassCard>
 
         {/* Completed */}
-        <GlassCard title="الدفعات المنقولة" subtitle={`${completed.length} دفعة مكتملة`} accent="sky">
+        <GlassCard title={t('nursery.completedBatches')} subtitle={`${completed.length} دفعة مكتملة`} accent="sky">
           <div className="space-y-3">
             {completed.map((b) => (
               <div key={b.id} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -157,12 +159,12 @@ export default function NurseryPage() {
 
             {/* Summary */}
             <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
-              <p className="text-xs font-semibold text-gray-500">ملخص الشهر الحالي</p>
+              <p className="text-xs font-semibold text-gray-500">{t('nursery.monthlySummary')}</p>
               {[
-                { label: 'إجمالي البذور المستخدمة', value: nurseryBatches.reduce((s, b) => s + b.totalSeeds, 0).toLocaleString('ar-SA') + ' بذرة' },
-                { label: 'إجمالي الشتلات المنتجة',  value: nurseryBatches.reduce((s, b) => s + b.germinated, 0).toLocaleString('ar-SA') + ' شتلة' },
-                { label: 'متوسط نسبة الإنبات',      value: nurseryStats.avgGerminationRate.toFixed(1) + '%' },
-                { label: 'إجمالي تكلفة الشتلات',    value: nurseryBatches.reduce((s, b) => s + b.totalCost, 0).toLocaleString('ar-SA') + ' ريال' },
+                { label: t('nursery.totalSeeds'),    value: nurseryBatches.reduce((s, b) => s + b.totalSeeds, 0).toLocaleString('ar-SA') + ' بذرة' },
+                { label: t('nursery.totalProduced'), value: nurseryBatches.reduce((s, b) => s + b.germinated, 0).toLocaleString('ar-SA') + ' شتلة' },
+                { label: t('nursery.avgGerRate'),    value: nurseryStats.avgGerminationRate.toFixed(1) + '%' },
+                { label: t('nursery.totalCost'),     value: nurseryBatches.reduce((s, b) => s + b.totalCost, 0).toLocaleString('ar-SA') + ' ريال' },
               ].map((s) => (
                 <div key={s.label} className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">{s.label}</span>

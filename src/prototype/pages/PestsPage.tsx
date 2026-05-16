@@ -6,6 +6,7 @@ import ActionButton from '../components/ActionButton';
 import StatusBadge from '../components/StatusBadge';
 import StatCard from '../components/StatCard';
 import { pestIncidents, preventionCalendar, pestStats, pesticideUsed } from '../data/mockData';
+import { useLang } from '../contexts/LangContext';
 
 const SEVERITY_CFG: Record<string, { bar: string; badge: string; icon: string }> = {
   'شديدة':  { bar: 'bg-red-400',   badge: 'bg-red-50 text-red-700 border-red-100',     icon: '🔴' },
@@ -23,9 +24,15 @@ const PREVENTION_STATUS: Record<string, string> = {
   مجدول: 'bg-gray-100 text-gray-500',
 };
 
-const TABS = ['الحوادث', 'المبيدات المستخدمة', 'جدول الوقاية'];
-
 export default function PestsPage() {
+  const { t } = useLang();
+
+  const TABS = [
+    { value: 'الحوادث',          label: 'pests.tabIncidents' },
+    { value: 'المبيدات المستخدمة',label: 'pests.tabPesticides' },
+    { value: 'جدول الوقاية',     label: 'pests.tabPrevention' },
+  ];
+
   const [tab, setTab] = useState('الحوادث');
   const [severityFilter, setSeverityFilter] = useState('الكل');
 
@@ -41,21 +48,21 @@ export default function PestsPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="الأمراض والآفات"
-        subtitle="رصد الحوادث والعلاج والوقاية"
-        action={<ActionButton size="sm" icon="➕">تسجيل حادثة</ActionButton>}
+        title={t('page.pests.title')}
+        subtitle={t('page.pests.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('pests.addIncident')}</ActionButton>}
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="حوادث نشطة"           value={active}                              unit=""      icon="🚨" color="red"    />
-        <StatCard label="تم علاجها هذا الشهر"  value={resolved}                            unit=""      icon="✅" color="green"  />
-        <StatCard label="بيوت متأثرة"           value={pestStats.affectedGreenhouses}       unit=""      icon="🏠" color="amber"  />
-        <StatCard label="تكلفة العلاج / شهر"    value={totalPesticideCost}                 unit="ريال"  icon="💊" color="purple" />
+        <StatCard label={t('pests.activeIncidents')} value={active}                        unit=""                    icon="🚨" color="red"    />
+        <StatCard label={t('pests.resolvedMonth')}   value={resolved}                      unit=""                    icon="✅" color="green"  />
+        <StatCard label={t('pests.affectedHouses')}  value={pestStats.affectedGreenhouses} unit=""                    icon="🏠" color="amber"  />
+        <StatCard label={t('pests.treatmentCost')}   value={totalPesticideCost}            unit={t('common.currency')} icon="💊" color="purple" />
       </div>
 
       {/* Risk Map */}
-      <GlassCard title="خريطة المخاطر — البيوت المحمية" accent="red">
+      <GlassCard title={t('pests.riskMap')} accent="red">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
           {[
             { name: 'بيت 1',  risk: 'منخفض',   crop: 'خيار'  },
@@ -92,16 +99,16 @@ export default function PestsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100/70 rounded-xl p-1 w-fit">
-        {TABS.map((t) => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === t ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >{t}</button>
+        {TABS.map((tb) => (
+          <button key={tb.value} onClick={() => setTab(tb.value)}
+            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === tb.value ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >{t(tb.label)}</button>
         ))}
       </div>
 
       {/* ─── الحوادث ─── */}
       {tab === 'الحوادث' && (
-        <GlassCard title="سجل الحوادث" subtitle={`${filtered.length} حادثة`} accent="red"
+        <GlassCard title={t('pests.incidentLog')} subtitle={`${filtered.length} حادثة`} accent="red"
           action={
             <div className="flex gap-1">
               {severities.map((s) => (
@@ -134,14 +141,14 @@ export default function PestsPage() {
                         <span>🏠 {inc.greenhouse}</span>
                         <span>🌿 {inc.crop}</span>
                         <span>📅 {inc.date}</span>
-                        <span>📊 المتأثر: <span className="font-semibold text-red-600">{inc.affected}</span></span>
+                        <span>📊 {t('pests.affected')} <span className="font-semibold text-red-600">{inc.affected}</span></span>
                       </div>
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-gray-500">
-                    <div><span className="font-medium text-gray-600">العلاج:</span> {inc.treatment}</div>
-                    <div><span className="font-medium text-gray-600">العامل:</span> {inc.worker}</div>
-                    <div><span className="font-medium text-gray-600">متابعة:</span> {inc.followup}</div>
+                    <div><span className="font-medium text-gray-600">{t('pests.treatment')}</span> {inc.treatment}</div>
+                    <div><span className="font-medium text-gray-600">{t('common.worker')}:</span> {inc.worker}</div>
+                    <div><span className="font-medium text-gray-600">{t('pests.followup')}</span> {inc.followup}</div>
                   </div>
                 </div>
               );
@@ -152,14 +159,14 @@ export default function PestsPage() {
 
       {/* ─── المبيدات المستخدمة ─── */}
       {tab === 'المبيدات المستخدمة' && (
-        <GlassCard title="المبيدات المستخدمة هذا الشهر" accent="purple"
-          action={<span className="text-xs text-gray-400">إجمالي: {totalPesticideCost} ريال</span>}
+        <GlassCard title={t('pests.pesticidesMonth')} accent="purple"
+          action={<span className="text-xs text-gray-400">{t('common.total')}: {totalPesticideCost} {t('common.currency')}</span>}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-right">
-                  {['اسم المبيد', 'الكمية', 'التكلفة', 'النوع', 'الهدف'].map((h) => (
+                  {[t('pests.pesticide'), t('common.quantity'), t('common.cost'), t('common.type'), t('pests.target')].map((h) => (
                     <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400">{h}</th>
                   ))}
                 </tr>
@@ -169,7 +176,7 @@ export default function PestsPage() {
                   <tr key={p.name} className="hover:bg-gray-50/60">
                     <td className="py-3 pr-3 font-semibold text-gray-800">{p.name}</td>
                     <td className="py-3 pr-3 text-gray-600">{p.qty} {p.unit}</td>
-                    <td className="py-3 pr-3 font-bold text-red-600">{p.cost} ريال</td>
+                    <td className="py-3 pr-3 font-bold text-red-600">{p.cost} {t('common.currency')}</td>
                     <td className="py-3 pr-3">
                       <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
                         p.type === 'بيولوجي' ? 'bg-green-50 text-green-700 border-green-100' :
@@ -189,7 +196,7 @@ export default function PestsPage() {
 
       {/* ─── جدول الوقاية ─── */}
       {tab === 'جدول الوقاية' && (
-        <GlassCard title="جدول الوقاية الدوري" subtitle="الموسم الحالي" accent="sky">
+        <GlassCard title={t('pests.preventionSched')} subtitle={t('pests.currentSeason')} accent="sky">
           <div className="space-y-3">
             {preventionCalendar.map((w, i) => (
               <div key={w.week}
@@ -217,11 +224,11 @@ export default function PestsPage() {
           <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-3 text-center">
             <div className="bg-green-50 rounded-xl py-3">
               <p className="text-xl font-extrabold text-green-700">{preventionCalendar.filter((w) => w.status === 'مكتمل').length}</p>
-              <p className="text-xs text-gray-400">مهام مكتملة</p>
+              <p className="text-xs text-gray-400">{t('pests.completedTasks')}</p>
             </div>
             <div className="bg-gray-50 rounded-xl py-3">
               <p className="text-xl font-extrabold text-gray-600">{preventionCalendar.filter((w) => w.status === 'مجدول').length}</p>
-              <p className="text-xs text-gray-400">مهام مجدولة</p>
+              <p className="text-xs text-gray-400">{t('pests.scheduledTasks')}</p>
             </div>
           </div>
         </GlassCard>

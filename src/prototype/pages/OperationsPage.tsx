@@ -6,6 +6,7 @@ import ActionButton from '../components/ActionButton';
 import StatusBadge from '../components/StatusBadge';
 import StatCard from '../components/StatCard';
 import { operationsData, operationStats, operationTypeChart } from '../data/mockData';
+import { useLang } from '../contexts/LangContext';
 
 const OP_TYPES = ['الكل', 'حصاد', 'ري', 'تسميد', 'رش وقائي', 'تقليم', 'زراعة', 'صيانة', 'تعبئة ونقل'];
 
@@ -26,6 +27,7 @@ const OP_COLORS: Record<string, string> = {
 };
 
 export default function OperationsPage() {
+  const { t } = useLang();
   const [typeFilter, setTypeFilter] = useState('الكل');
 
   const filtered = operationsData.filter(
@@ -37,22 +39,22 @@ export default function OperationsPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="العمليات الزراعية"
-        subtitle="سجل وتتبع جميع العمليات اليومية"
-        action={<ActionButton size="sm" icon="➕">تسجيل عملية</ActionButton>}
+        title={t('page.operations.title')}
+        subtitle={t('page.operations.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('ops.addOp')}</ActionButton>}
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="عمليات هذا الأسبوع"  value={operationStats.thisWeek}   unit=""      icon="⚙️" color="green"  trend={{ val: 8, up: true }} />
-        <StatCard label="التكلفة الإجمالية"    value={operationStats.totalCost}  unit="ريال"  icon="💸" color="amber"  />
-        <StatCard label="الإنتاج المحصود"       value={operationStats.harvested}  unit=""      icon="🌾" color="sky"    />
-        <StatCard label="أكثر عملية تكراراً"   value={operationStats.topType}    unit=""      icon="📊" color="purple" />
+        <StatCard label={t('ops.weekOps')}    value={operationStats.thisWeek}   unit=""                  icon="⚙️" color="green"  trend={{ val: 8, up: true }} />
+        <StatCard label={t('ops.totalCost')}  value={operationStats.totalCost}  unit={t('common.currency')} icon="💸" color="amber"  />
+        <StatCard label={t('ops.harvested')}  value={operationStats.harvested}  unit=""                  icon="🌾" color="sky"    />
+        <StatCard label={t('ops.topType')}    value={operationStats.topType}    unit=""                  icon="📊" color="purple" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Type Distribution */}
-        <GlassCard title="توزيع العمليات" subtitle="هذا الأسبوع" accent="green" className="lg:col-span-1">
+        <GlassCard title={t('ops.distribution')} subtitle={t('ops.thisWeek')} accent="green" className="lg:col-span-1">
           <div className="space-y-3">
             {operationTypeChart.map((t) => {
               const max = Math.max(...operationTypeChart.map((x) => x.count));
@@ -76,8 +78,8 @@ export default function OperationsPage() {
           {/* Summary */}
           <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-3">
             {[
-              { label: 'مكتملة', value: operationsData.filter((o) => o.status === 'مكتملة').length, color: 'text-green-700' },
-              { label: 'قيد التنفيذ', value: operationsData.filter((o) => o.status !== 'مكتملة').length, color: 'text-amber-600' },
+              { label: t('ops.completed'),   value: operationsData.filter((o) => o.status === 'مكتملة').length,  color: 'text-green-700' },
+              { label: t('ops.inProgress'),  value: operationsData.filter((o) => o.status !== 'مكتملة').length,  color: 'text-amber-600' },
             ].map((s) => (
               <div key={s.label} className="bg-gray-50 rounded-xl p-3 text-center">
                 <p className={`text-xl font-extrabold ${s.color}`}>{s.value}</p>
@@ -89,25 +91,25 @@ export default function OperationsPage() {
 
         {/* Operations Table */}
         <GlassCard
-          title="سجل العمليات"
-          subtitle={`${filtered.length} عملية — تكلفة: ${totalCostFiltered.toLocaleString('ar-SA')} ريال`}
+          title={t('ops.log')}
+          subtitle={`${filtered.length} عملية — تكلفة: ${totalCostFiltered.toLocaleString('ar-SA')} ${t('common.currency')}`}
           accent="sky"
           className="lg:col-span-2"
-          action={<ActionButton variant="secondary" size="sm" icon="📥">تصدير</ActionButton>}
+          action={<ActionButton variant="secondary" size="sm" icon="📥">{t('common.export')}</ActionButton>}
         >
           {/* Filter chips */}
           <div className="flex gap-2 flex-wrap mb-4">
-            {OP_TYPES.map((t) => (
+            {OP_TYPES.map((opType) => (
               <button
-                key={t}
-                onClick={() => setTypeFilter(t)}
+                key={opType}
+                onClick={() => setTypeFilter(opType)}
                 className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
-                  typeFilter === t
+                  typeFilter === opType
                     ? 'bg-green-600 text-white border-green-600'
                     : 'bg-white text-gray-500 border-gray-200 hover:border-green-300'
                 }`}
               >
-                {OP_ICONS[t] ?? ''} {t}
+                {OP_ICONS[opType] ?? ''} {opType}
               </button>
             ))}
           </div>
@@ -116,7 +118,7 @@ export default function OperationsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-right border-b border-gray-100">
-                  {['التاريخ', 'النوع', 'المزرعة / الدورة', 'العامل', 'المدة', 'التكلفة', 'الكمية', 'الحالة'].map((h) => (
+                  {[t('common.date'), t('common.type'), t('ops.farmCycle'), t('common.worker'), t('ops.duration'), t('common.cost'), t('common.quantity'), t('common.status')].map((h) => (
                     <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -144,14 +146,14 @@ export default function OperationsPage() {
               </tbody>
             </table>
             {filtered.length === 0 && (
-              <p className="text-center text-gray-400 text-sm py-8">لا توجد عمليات بهذا الفلتر</p>
+              <p className="text-center text-gray-400 text-sm py-8">{t('ops.noFilter')}</p>
             )}
           </div>
         </GlassCard>
       </div>
 
       {/* Quick Add Cards */}
-      <GlassCard title="تسجيل عملية سريع" accent="amber">
+      <GlassCard title={t('ops.quickAdd')} accent="amber">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {(['حصاد', 'ري', 'تسميد', 'رش وقائي'] as const).map((type) => (
             <button

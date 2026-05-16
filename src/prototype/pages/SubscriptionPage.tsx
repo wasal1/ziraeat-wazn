@@ -11,6 +11,7 @@ import {
   moduleAccessMap,
   type PlanId,
 } from '../data/mockData';
+import { useLang } from '../contexts/LangContext';
 
 // ─── helpers ────────────────────────────────────────────
 
@@ -67,7 +68,7 @@ function UsageMeter({
           <span className="text-2xl">{icon}</span>
           <span className="text-sm font-semibold text-gray-700">{label}</span>
         </div>
-        {over && <span className="text-[10px] bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full font-semibold">قارب الحد</span>}
+        {over && <span className="text-[10px] bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full font-semibold">{t('sub.nearLimit')}</span>}
       </div>
       <div className="flex items-end gap-1 mb-2">
         <span className="text-3xl font-extrabold text-gray-800">{used}</span>
@@ -87,9 +88,14 @@ function UsageMeter({
   );
 }
 
-const TABS = ['نظرة عامة', 'مقارنة الباقات', 'الفواتير', 'الإضافات'];
-
 export default function SubscriptionPage() {
+  const { t } = useLang();
+  const TABS = [
+    { value: 'نظرة عامة',       label: 'sub.tabOverview'  },
+    { value: 'مقارنة الباقات',  label: 'sub.tabCompare'   },
+    { value: 'الفواتير',        label: 'sub.tabInvoices'  },
+    { value: 'الإضافات',        label: 'sub.tabAddons'    },
+  ];
   const [tab, setTab]       = useState('نظرة عامة');
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -105,12 +111,12 @@ export default function SubscriptionPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="الاشتراك والباقات"
-        subtitle="إدارة خطة الاشتراك والاستخدام والفواتير"
+        title={t('page.subscription.title')}
+        subtitle={t('page.subscription.sub')}
         action={
           <div className="flex gap-2">
-            <ActionButton variant="secondary" size="sm" icon="🔄">تجديد الاشتراك</ActionButton>
-            <ActionButton size="sm" icon="⬆️">ترقية الباقة</ActionButton>
+            <ActionButton variant="secondary" size="sm" icon="🔄">{t('sub.renew')}</ActionButton>
+            <ActionButton size="sm" icon="⬆️">{t('sub.upgrade')}</ActionButton>
           </div>
         }
       />
@@ -142,9 +148,9 @@ export default function SubscriptionPage() {
           {/* Dates */}
           <div className="grid grid-cols-3 gap-4 md:gap-6">
             {[
-              { label: 'تاريخ البدء',    value: currentSubscription.startDate },
-              { label: 'تاريخ الانتهاء', value: currentSubscription.endDate   },
-              { label: 'الأيام المتبقية', value: currentSubscription.daysRemaining + ' يوم',
+              { label: t('sub.startDate'), value: currentSubscription.startDate },
+              { label: t('sub.endDate'),   value: currentSubscription.endDate   },
+              { label: t('sub.daysLeft'),  value: currentSubscription.daysRemaining + ' ' + t('sub.day'),
                 highlight: daysUrgent },
             ].map((item) => (
               <div key={item.label} className="text-center">
@@ -162,10 +168,10 @@ export default function SubscriptionPage() {
               {plan.price !== null ? plan.price.toLocaleString('ar-SA') : 'مخصص'}
             </p>
             <p className="text-[11px] text-white/60 mt-0.5">
-              {plan.price !== null ? 'ريال / سنة' : 'حسب الاتفاقية'}
+              {plan.price !== null ? t('sub.riyalYear') : 'حسب الاتفاقية'}
             </p>
             <p className="text-[10px] text-white/50 mt-1">
-              {currentSubscription.autoRenew ? '🔄 تجديد تلقائي' : 'بدون تجديد تلقائي'}
+              {currentSubscription.autoRenew ? t('sub.autoRenew') : t('sub.noAutoRenew')}
             </p>
           </div>
         </div>
@@ -178,7 +184,7 @@ export default function SubscriptionPage() {
               اشتراكك ينتهي خلال {currentSubscription.daysRemaining} يوماً — جدد الآن لتجنب انقطاع الخدمة.
             </p>
             <button className="mr-auto text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors whitespace-nowrap">
-              تجديد الآن
+              {t('sub.renewNow')}
             </button>
           </div>
         )}
@@ -193,10 +199,10 @@ export default function SubscriptionPage() {
 
       {/* ─── Tabs ──────────────────────────────────────── */}
       <div className="flex gap-1 bg-gray-100/70 rounded-xl p-1 w-fit">
-        {TABS.map((t) => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === t ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >{t}</button>
+        {TABS.map((tb) => (
+          <button key={tb.value} onClick={() => setTab(tb.value)}
+            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === tb.value ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >{t(tb.label)}</button>
         ))}
       </div>
 
@@ -204,7 +210,7 @@ export default function SubscriptionPage() {
       {tab === 'نظرة عامة' && (
         <div className="space-y-5">
           {/* Usage meters */}
-          <GlassCard title="الاستخدام الحالي" subtitle="مقارنة بحدود الباقة" accent="green">
+          <GlassCard title={t('sub.usageTitle')} subtitle={t('sub.vsLimits')} accent="green">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <UsageMeter label="المزارع"          icon="🌾" used={u.farms}        limit={planLimits.farms}        color="green"  />
               <UsageMeter label="المستخدمون"       icon="👤" used={u.users}        limit={planLimits.users}        color="sky"    />
@@ -225,20 +231,20 @@ export default function SubscriptionPage() {
               </div>
               <div className="flex gap-2">
                 <span className="text-xs bg-purple-100 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-full font-semibold">
-                  {totalAI - u.aiReports} تقرير متبقي
+                  {totalAI - u.aiReports} {t('sub.aiReports')}
                 </span>
                 <button
                   onClick={() => setTab('الإضافات')}
                   className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-full font-semibold hover:bg-purple-700 transition-colors"
                 >
-                  + إضافة المزيد
+                  {t('sub.addMore')}
                 </button>
               </div>
             </div>
           </GlassCard>
 
           {/* Module access */}
-          <GlassCard title="الوحدات المتاحة" subtitle="بحسب باقتك الحالية" accent="sky">
+          <GlassCard title={t('sub.modulesTitle')} subtitle={t('sub.byPlan')} accent="sky">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               {modules.map((m) => (
                 <div key={m} className="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2">
@@ -257,13 +263,13 @@ export default function SubscriptionPage() {
               <div className="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-3">
                 <span className="text-lg">⬆️</span>
                 <p className="text-xs text-amber-700 font-medium flex-1">
-                  {plan.lockedModules!.length} وحدات مقفلة — رقّي باقتك للوصول إليها.
+                  {plan.lockedModules!.length} {t('sub.lockedModules')}
                 </p>
                 <button
                   onClick={() => setTab('مقارنة الباقات')}
                   className="text-xs bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-700 transition-colors whitespace-nowrap"
                 >
-                  مقارنة الباقات
+                  {t('sub.compareBtn')}
                 </button>
               </div>
             )}
@@ -415,20 +421,23 @@ export default function SubscriptionPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {[
-                    { label: 'المزارع',                starter: '1',       professional: '3',     company: '10',         enterprise: 'غير محدود' },
-                    { label: 'المستخدمون',             starter: '3',       professional: '10',    company: '30',         enterprise: 'غير محدود' },
-                    { label: 'البيوت المحمية',         starter: '5',       professional: '30',    company: '150',        enterprise: 'غير محدود' },
-                    { label: 'الدورات الزراعية النشطة', starter: '10',     professional: '50',    company: '250',        enterprise: 'غير محدود' },
-                    { label: 'تقارير الذكاء الاصطناعي', starter: '2/سنة', professional: '10/سنة',company: '40/سنة',     enterprise: 'غير محدود' },
-                    { label: 'إدارة المخزون',          starter: '—',       professional: '✓',     company: '✓',          enterprise: '✓'         },
-                    { label: 'إدارة العمال',           starter: '—',       professional: '✓',     company: '✓',          enterprise: '✓'         },
-                    { label: 'تصدير PDF / Excel',      starter: '—',       professional: '✓',     company: '✓',          enterprise: '✓'         },
-                    { label: 'لوحات متعددة المزارع',   starter: '—',       professional: '—',     company: '✓',          enterprise: '✓'         },
-                    { label: 'مقارنة المزارع',         starter: '—',       professional: '—',     company: '✓',          enterprise: '✓'         },
-                    { label: 'شعار مخصص في التقارير',  starter: '—',       professional: '—',     company: '✓',          enterprise: '✓'         },
-                    { label: 'دعم أولوية',             starter: '—',       professional: '—',     company: '✓',          enterprise: '✓'         },
-                    { label: 'مدير حساب مخصص',        starter: '—',       professional: '—',     company: '—',          enterprise: '✓'         },
-                    { label: 'تكاملات مخصصة',         starter: '—',       professional: '—',     company: '—',          enterprise: '✓'         },
+                    { label: 'المزارع',                 starter: '1',          professional: '3',         company: '10',         enterprise: 'غير محدود' },
+                    { label: 'المستخدمون',              starter: '3',          professional: '10',        company: '30',         enterprise: 'غير محدود' },
+                    { label: 'البيوت المحمية',          starter: '5',          professional: '30',        company: '150',        enterprise: 'غير محدود' },
+                    { label: 'الدورات الزراعية النشطة', starter: '10',         professional: '50',        company: '250',        enterprise: 'غير محدود' },
+                    { label: 'الحساسات والقراءات',      starter: '—',          professional: 'حتى 10',    company: 'غير محدود',  enterprise: 'غير محدود' },
+                    { label: 'الكاميرات والمراقبة',     starter: '—',          professional: 'حتى 4',     company: 'غير محدود',  enterprise: 'غير محدود' },
+                    { label: 'الري الكهربائي والمضخات', starter: '—',          professional: 'حتى 5',     company: 'غير محدود',  enterprise: 'غير محدود' },
+                    { label: 'التحليل الذكي (AI)',       starter: '—',          professional: '10/سنة',    company: '40/سنة',     enterprise: 'غير محدود' },
+                    { label: 'إدارة المخزون',           starter: '—',          professional: '✓',         company: '✓',          enterprise: '✓'         },
+                    { label: 'إدارة العمال',            starter: '—',          professional: '✓',         company: '✓',          enterprise: '✓'         },
+                    { label: 'تصدير PDF / Excel',       starter: '—',          professional: '✓',         company: '✓',          enterprise: '✓'         },
+                    { label: 'لوحات متعددة المزارع',    starter: '—',          professional: '—',         company: '✓',          enterprise: '✓'         },
+                    { label: 'مقارنة المزارع',          starter: '—',          professional: '—',         company: '✓',          enterprise: '✓'         },
+                    { label: 'شعار مخصص في التقارير',   starter: '—',          professional: '—',         company: '✓',          enterprise: '✓'         },
+                    { label: 'دعم أولوية',              starter: '—',          professional: '—',         company: '✓',          enterprise: '✓'         },
+                    { label: 'مدير حساب مخصص',         starter: '—',          professional: '—',         company: '—',          enterprise: '✓'         },
+                    { label: 'تكاملات مخصصة',          starter: '—',          professional: '—',         company: '—',          enterprise: '✓'         },
                   ].map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50/60 transition-colors">
                       <td className="py-3 pr-3 text-gray-600 font-medium whitespace-nowrap">{row.label}</td>

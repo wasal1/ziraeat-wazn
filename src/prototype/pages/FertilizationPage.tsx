@@ -6,8 +6,7 @@ import ActionButton from '../components/ActionButton';
 import StatCard from '../components/StatCard';
 import { fertilizerInventory, fertilizerProgram, fertilizerApplications, fertilizerCostChart } from '../data/mockData';
 import { LineChartMock } from '../components/MockChart';
-
-const TABS = ['البرنامج التسميدي', 'سجل التطبيقات', 'المخزون'];
+import { useLang } from '../contexts/LangContext';
 
 const STOCK_COLOR: Record<string, string> = {
   'كافٍ':        'bg-green-50 text-green-700 border-green-100',
@@ -16,6 +15,14 @@ const STOCK_COLOR: Record<string, string> = {
 };
 
 export default function FertilizationPage() {
+  const { t } = useLang();
+
+  const TABS = [
+    { value: 'البرنامج التسميدي', label: 'fert.tabProgram' },
+    { value: 'سجل التطبيقات',     label: 'fert.tabLog' },
+    { value: 'المخزون',           label: 'fert.tabInventory' },
+  ];
+
   const [tab, setTab] = useState('البرنامج التسميدي');
 
   const totalCostMonth  = fertilizerApplications.reduce((s, a) => s + a.cost, 0);
@@ -25,41 +32,41 @@ export default function FertilizationPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="إدارة التسميد"
-        subtitle="البرامج التسميدية والمخزون وسجل التطبيقات"
-        action={<ActionButton size="sm" icon="➕">تسجيل تسميد</ActionButton>}
+        title={t('page.fertilization.title')}
+        subtitle={t('page.fertilization.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('fert.addRecord')}</ActionButton>}
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="تطبيقات هذا الشهر"   value={fertilizerApplications.length} unit=""      icon="🧪" color="green"  />
-        <StatCard label="تكلفة التسميد / شهر"  value={totalCostMonth}                unit="ريال"  icon="💰" color="amber"  />
-        <StatCard label="أصناف بمخزون منخفض"   value={lowStock}                      unit=""      icon="⚠️" color="red"    />
-        <StatCard label="آخر تسميد"            value={lastApplication}               unit=""      icon="📅" color="sky"    />
+        <StatCard label={t('fert.monthlyApps')}  value={fertilizerApplications.length} unit=""                    icon="🧪" color="green"  />
+        <StatCard label={t('fert.monthlyCost')}   value={totalCostMonth}                unit={t('common.currency')} icon="💰" color="amber"  />
+        <StatCard label={t('fert.lowStock')}      value={lowStock}                      unit=""                    icon="⚠️" color="red"    />
+        <StatCard label={t('fert.lastApp')}       value={lastApplication}               unit=""                    icon="📅" color="sky"    />
       </div>
 
       {/* Cost Trend */}
-      <GlassCard title="تكلفة التسميد الأسبوعية" subtitle="ريال" accent="green">
-        <LineChartMock data={fertilizerCostChart} xKey="week" yKey="cost" color="#16a34a" height={180} label="ريال" />
+      <GlassCard title={t('fert.weeklyCost')} subtitle={t('common.currency')} accent="green">
+        <LineChartMock data={fertilizerCostChart} xKey="week" yKey="cost" color="#16a34a" height={180} label={t('common.currency')} />
       </GlassCard>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100/70 rounded-xl p-1 w-fit">
-        {TABS.map((t) => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === t ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >{t}</button>
+        {TABS.map((tb) => (
+          <button key={tb.value} onClick={() => setTab(tb.value)}
+            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === tb.value ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >{t(tb.label)}</button>
         ))}
       </div>
 
       {/* ─── البرنامج التسميدي ─── */}
       {tab === 'البرنامج التسميدي' && (
-        <GlassCard title="البرنامج التسميدي — خيار بيت رقم 7" subtitle="6 أسابيع" accent="green">
+        <GlassCard title={t('fert.programTitle')} subtitle={`6 ${t('fert.weeks')}`} accent="green">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-right">
-                  {['الأسبوع', 'المرحلة', 'التركيبة', 'آزوت N', 'فوسفور P', 'بوتاسيوم K', 'EC المستهدف', 'ملاحظات'].map((h) => (
+                  {[t('fert.week'), t('fert.stage'), t('fert.formula'), 'آزوت N', 'فوسفور P', 'بوتاسيوم K', t('fert.ecTarget'), t('common.notes')].map((h) => (
                     <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -72,7 +79,7 @@ export default function FertilizationPage() {
                         <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold ${
                           i < 2 ? 'bg-gray-100 text-gray-400' : i === 2 ? 'bg-green-100 text-green-700' : 'bg-gray-50 text-gray-500'
                         }`}>{w.week}</span>
-                        {i === 2 && <span className="text-[9px] bg-green-600 text-white px-1.5 py-0.5 rounded-full">الحالي</span>}
+                        {i === 2 && <span className="text-[9px] bg-green-600 text-white px-1.5 py-0.5 rounded-full">{t('fert.current')}</span>}
                       </div>
                     </td>
                     <td className="py-3 pr-3 whitespace-nowrap">
@@ -108,14 +115,14 @@ export default function FertilizationPage() {
 
       {/* ─── سجل التطبيقات ─── */}
       {tab === 'سجل التطبيقات' && (
-        <GlassCard title="سجل التطبيقات" subtitle={`${fertilizerApplications.length} تطبيق`} accent="sky"
-          action={<ActionButton variant="secondary" size="sm" icon="📥">تصدير</ActionButton>}
+        <GlassCard title={t('fert.logTitle')} subtitle={`${fertilizerApplications.length} تطبيق`} accent="sky"
+          action={<ActionButton variant="secondary" size="sm" icon="📥">{t('common.export')}</ActionButton>}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-right">
-                  {['التاريخ', 'الدورة', 'نوع السماد', 'الكمية', 'الطريقة', 'EC', 'pH', 'التكلفة', 'العامل', 'ملاحظات'].map((h) => (
+                  {[t('common.date'), t('fert.cycle'), t('fert.fertType'), t('common.quantity'), t('fert.method'), 'EC', 'pH', t('common.cost'), t('common.worker'), t('common.notes')].map((h) => (
                     <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -145,8 +152,8 @@ export default function FertilizationPage() {
 
       {/* ─── المخزون ─── */}
       {tab === 'المخزون' && (
-        <GlassCard title="مخزون الأسمدة" subtitle={`${fertilizerInventory.length} صنف`} accent="amber"
-          action={<ActionButton size="sm" icon="🛒">طلب شراء</ActionButton>}
+        <GlassCard title={t('fert.inventoryTitle')} subtitle={`${fertilizerInventory.length} صنف`} accent="amber"
+          action={<ActionButton size="sm" icon="🛒">{t('fert.buyOrder')}</ActionButton>}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {fertilizerInventory.map((f) => {
@@ -181,7 +188,7 @@ export default function FertilizationPage() {
                   {/* Stock bar */}
                   <div>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-500">المخزون الحالي</span>
+                      <span className="text-gray-500">{t('fert.currentStock')}</span>
                       <span className="font-bold text-gray-800">{f.stock} {f.unit}</span>
                     </div>
                     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -191,7 +198,7 @@ export default function FertilizationPage() {
                       />
                     </div>
                     <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-                      <span>الحد الأدنى: {f.minStock} {f.unit}</span>
+                      <span>{t('fert.minStock')} {f.minStock} {f.unit}</span>
                       <span>{f.cost} ريال/{f.unit}</span>
                     </div>
                   </div>

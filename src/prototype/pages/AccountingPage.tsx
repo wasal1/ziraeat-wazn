@@ -9,15 +9,23 @@ import {
   revenueByFarm, transactions,
 } from '../data/mockData';
 import { LineChartMock, DonutChartMock } from '../components/MockChart';
+import { useLang } from '../contexts/LangContext';
 
 const TX_TYPE_COLOR: Record<string, string> = {
   إيراد:  'text-green-700 bg-green-50 border-green-100',
   مصروف: 'text-red-600 bg-red-50 border-red-100',
 };
 
-const TABS = ['نظرة عامة', 'الإيرادات والمصروفات', 'توزيع المصروفات', 'المعاملات'];
-
 export default function AccountingPage() {
+  const { t } = useLang();
+
+  const TABS = [
+    { value: 'نظرة عامة',             label: 'accounting.tabOverview' },
+    { value: 'الإيرادات والمصروفات', label: 'accounting.tabRevExp' },
+    { value: 'توزيع المصروفات',       label: 'accounting.tabExpDist' },
+    { value: 'المعاملات',             label: 'accounting.tabTx' },
+  ];
+
   const [tab, setTab] = useState('نظرة عامة');
 
   const donutData = expenseBreakdown.map((e) => ({
@@ -29,12 +37,12 @@ export default function AccountingPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="المحاسبة والمالية"
-        subtitle="الإيرادات والمصروفات وصافي الربح"
+        title={t('page.accounting.title')}
+        subtitle={t('page.accounting.sub')}
         action={
           <div className="flex gap-2">
-            <ActionButton variant="secondary" size="sm" icon="📥">تصدير</ActionButton>
-            <ActionButton size="sm" icon="➕">إضافة معاملة</ActionButton>
+            <ActionButton variant="secondary" size="sm" icon="📥">{t('common.export')}</ActionButton>
+            <ActionButton size="sm" icon="➕">{t('accounting.addTx')}</ActionButton>
           </div>
         }
       />
@@ -42,31 +50,31 @@ export default function AccountingPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="إجمالي الإيرادات"
+          label={t('accounting.totalRevenue')}
           value={(accountingKPIs.totalRevenue / 1000).toFixed(0) + 'K'}
-          unit="ريال"
+          unit={t('common.currency')}
           icon="💰"
           color="green"
           trend={{ val: 12, up: true }}
         />
         <StatCard
-          label="إجمالي المصروفات"
+          label={t('accounting.totalExpenses')}
           value={(accountingKPIs.totalExpenses / 1000).toFixed(0) + 'K'}
-          unit="ريال"
+          unit={t('common.currency')}
           icon="💸"
           color="amber"
           trend={{ val: 4, up: true }}
         />
         <StatCard
-          label="صافي الربح"
+          label={t('accounting.netProfit')}
           value={(accountingKPIs.netProfit / 1000).toFixed(0) + 'K'}
-          unit="ريال"
+          unit={t('common.currency')}
           icon="📈"
           color="sky"
           trend={{ val: 18, up: true }}
         />
         <StatCard
-          label="هامش الربح"
+          label={t('accounting.profitMargin')}
           value={accountingKPIs.profitMargin.toFixed(1)}
           unit="%"
           icon="🎯"
@@ -77,17 +85,17 @@ export default function AccountingPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100/70 backdrop-blur-sm rounded-xl p-1 w-fit">
-        {TABS.map((t) => (
+        {TABS.map((tb) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tb.value}
+            onClick={() => setTab(tb.value)}
             className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${
-              tab === t
+              tab === tb.value
                 ? 'bg-white text-green-700 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            {t}
+            {t(tb.label)}
           </button>
         ))}
       </div>
@@ -96,14 +104,14 @@ export default function AccountingPage() {
       {tab === 'نظرة عامة' && (
         <div className="space-y-5">
           {/* Progress toward target */}
-          <GlassCard title="التقدم نحو هدف الإيرادات" subtitle="2026" accent="green">
+          <GlassCard title={t('accounting.revenueTarget')} subtitle="2026" accent="green">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-2xl font-extrabold text-gray-800">
                   {accountingKPIs.totalRevenue.toLocaleString('ar-SA')}
                   <span className="text-sm font-normal text-gray-400 mr-1">ريال</span>
                 </p>
-                <p className="text-xs text-gray-400">من أصل {accountingKPIs.revenueTarget.toLocaleString('ar-SA')} ريال</p>
+                <p className="text-xs text-gray-400">من أصل {accountingKPIs.revenueTarget.toLocaleString('ar-SA')} {t('common.currency')}</p>
               </div>
               <div className="text-left">
                 <p className="text-3xl font-extrabold text-green-700">{accountingKPIs.targetAchieved}%</p>
@@ -118,13 +126,13 @@ export default function AccountingPage() {
             </div>
             <div className="flex justify-between mt-2 text-[10px] text-gray-400">
               <span>0</span>
-              <span className="text-green-600 font-semibold">نقطة التعادل: {accountingKPIs.breakEven.toLocaleString('ar-SA')} ريال/شهر ✓</span>
+              <span className="text-green-600 font-semibold">{t('accounting.breakEven')} {accountingKPIs.breakEven.toLocaleString('ar-SA')} {t('common.riyalMonth')} ✓</span>
               <span>{accountingKPIs.revenueTarget.toLocaleString('ar-SA')}</span>
             </div>
           </GlassCard>
 
           {/* Farm Revenue comparison */}
-          <GlassCard title="الربحية حسب المزرعة" accent="sky">
+          <GlassCard title={t('accounting.profitByFarm')} accent="sky">
             <div className="space-y-4">
               {revenueByFarm.map((f) => {
                 const maxRev = Math.max(...revenueByFarm.map((x) => x.revenue));
@@ -135,8 +143,8 @@ export default function AccountingPage() {
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-sm font-semibold text-gray-700">{f.farm}</span>
                       <div className="flex items-center gap-3 text-xs">
-                        <span className="text-green-700 font-bold">{f.profit.toLocaleString('ar-SA')} ريال ربح</span>
-                        <span className="text-gray-400">هامش {margin}%</span>
+                        <span className="text-green-700 font-bold">{f.profit.toLocaleString('ar-SA')} {t('common.currency')}</span>
+                        <span className="text-gray-400">{t('accounting.profitMargin')} {margin}%</span>
                       </div>
                     </div>
                     <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -146,8 +154,8 @@ export default function AccountingPage() {
                       />
                     </div>
                     <div className="flex justify-between mt-1 text-[10px] text-gray-400">
-                      <span>إيرادات: {f.revenue.toLocaleString('ar-SA')} ريال</span>
-                      <span>مصروفات: {f.expenses.toLocaleString('ar-SA')} ريال</span>
+                      <span>{t('accounting.monthlyRev')}: {f.revenue.toLocaleString('ar-SA')} {t('common.currency')}</span>
+                      <span>{t('accounting.monthlyExp')}: {f.expenses.toLocaleString('ar-SA')} {t('common.currency')}</span>
                     </div>
                   </div>
                 );
@@ -161,25 +169,25 @@ export default function AccountingPage() {
       {tab === 'الإيرادات والمصروفات' && (
         <div className="space-y-5">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <GlassCard title="الإيرادات الشهرية" subtitle="ريال" accent="green">
-              <LineChartMock data={accountingMonthly} xKey="month" yKey="revenue" color="#16a34a" height={200} label="ريال" />
+            <GlassCard title={t('accounting.monthlyRev')} subtitle={t('common.currency')} accent="green">
+              <LineChartMock data={accountingMonthly} xKey="month" yKey="revenue" color="#16a34a" height={200} label={t('common.currency')} />
             </GlassCard>
-            <GlassCard title="المصروفات الشهرية" subtitle="ريال" accent="amber">
-              <LineChartMock data={accountingMonthly} xKey="month" yKey="expenses" color="#f59e0b" height={200} label="ريال" />
+            <GlassCard title={t('accounting.monthlyExp')} subtitle={t('common.currency')} accent="amber">
+              <LineChartMock data={accountingMonthly} xKey="month" yKey="expenses" color="#f59e0b" height={200} label={t('common.currency')} />
             </GlassCard>
           </div>
 
-          <GlassCard title="صافي الربح الشهري" subtitle="ريال" accent="sky">
-            <LineChartMock data={accountingMonthly} xKey="month" yKey="profit" color="#0ea5e9" height={180} label="ريال" />
+          <GlassCard title={t('accounting.monthlyProfit')} subtitle={t('common.currency')} accent="sky">
+            <LineChartMock data={accountingMonthly} xKey="month" yKey="profit" color="#0ea5e9" height={180} label={t('common.currency')} />
           </GlassCard>
 
           {/* Monthly table */}
-          <GlassCard title="جدول الإيرادات والمصروفات" accent="purple">
+          <GlassCard title={t('accounting.monthlyTable')} accent="purple">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-right border-b border-gray-100">
-                    {['الشهر', 'الإيرادات', 'المصروفات', 'صافي الربح', 'هامش الربح'].map((h) => (
+                    {[t('accounting.monthCol'), t('accounting.monthlyRev'), t('accounting.monthlyExp'), t('accounting.monthlyProfit'), t('accounting.profitMargin')].map((h) => (
                       <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400">{h}</th>
                     ))}
                   </tr>
@@ -190,9 +198,9 @@ export default function AccountingPage() {
                     return (
                       <tr key={m.month} className="hover:bg-gray-50/60">
                         <td className="py-3 pr-3 font-semibold text-gray-800">{m.month}</td>
-                        <td className="py-3 pr-3 text-green-700 font-bold">{m.revenue.toLocaleString('ar-SA')} ريال</td>
-                        <td className="py-3 pr-3 text-amber-600 font-semibold">{m.expenses.toLocaleString('ar-SA')} ريال</td>
-                        <td className="py-3 pr-3 text-sky-700 font-bold">{m.profit.toLocaleString('ar-SA')} ريال</td>
+                        <td className="py-3 pr-3 text-green-700 font-bold">{m.revenue.toLocaleString('ar-SA')} {t('common.currency')}</td>
+                        <td className="py-3 pr-3 text-amber-600 font-semibold">{m.expenses.toLocaleString('ar-SA')} {t('common.currency')}</td>
+                        <td className="py-3 pr-3 text-sky-700 font-bold">{m.profit.toLocaleString('ar-SA')} {t('common.currency')}</td>
                         <td className="py-3 pr-3">
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                             Number(margin) >= 35 ? 'bg-green-100 text-green-700' : 'bg-sky-100 text-sky-700'
@@ -213,25 +221,25 @@ export default function AccountingPage() {
       {/* ─── توزيع المصروفات ─── */}
       {tab === 'توزيع المصروفات' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <GlassCard title="توزيع المصروفات" subtitle="نسبة مئوية" accent="amber">
+          <GlassCard title={t('accounting.expDistChart')} subtitle={t('accounting.pctLabel')} accent="amber">
             <DonutChartMock data={donutData} height={260} />
           </GlassCard>
 
-          <GlassCard title="تفاصيل المصروفات" subtitle="إجمالي هذا العام" accent="red">
+          <GlassCard title={t('accounting.expDetails')} subtitle={t('accounting.yearTotal')} accent="red">
             <div className="space-y-3">
               {expenseBreakdown.map((e) => (
                 <div key={e.label} className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: e.color }} />
                   <span className="text-sm text-gray-700 flex-1">{e.label}</span>
                   <span className="text-xs text-gray-400">{e.pct}%</span>
-                  <span className="text-sm font-bold text-gray-800 w-28 text-left">{e.value.toLocaleString('ar-SA')} ريال</span>
+                  <span className="text-sm font-bold text-gray-800 w-28 text-left">{e.value.toLocaleString('ar-SA')} {t('common.currency')}</span>
                 </div>
               ))}
               <div className="flex items-center gap-3 border-t border-gray-100 pt-3 mt-1">
                 <div className="w-3 h-3 flex-shrink-0" />
-                <span className="text-sm font-bold text-gray-800 flex-1">الإجمالي</span>
+                <span className="text-sm font-bold text-gray-800 flex-1">{t('common.total')}</span>
                 <span className="text-sm font-extrabold text-amber-700 w-28 text-left">
-                  {expenseBreakdown.reduce((s, e) => s + e.value, 0).toLocaleString('ar-SA')} ريال
+                  {expenseBreakdown.reduce((s, e) => s + e.value, 0).toLocaleString('ar-SA')} {t('common.currency')}
                 </span>
               </div>
             </div>
@@ -241,14 +249,14 @@ export default function AccountingPage() {
 
       {/* ─── المعاملات ─── */}
       {tab === 'المعاملات' && (
-        <GlassCard title="آخر المعاملات" subtitle={`${transactions.length} معاملة`} accent="green"
-          action={<ActionButton variant="secondary" size="sm" icon="📥">تصدير</ActionButton>}
+        <GlassCard title={t('accounting.lastTx')} subtitle={`${transactions.length} معاملة`} accent="green"
+          action={<ActionButton variant="secondary" size="sm" icon="📥">{t('common.export')}</ActionButton>}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-right border-b border-gray-100">
-                  {['التاريخ', 'النوع', 'الوصف', 'المزرعة', 'الفئة', 'المبلغ'].map((h) => (
+                  {[t('common.date'), t('accounting.txType'), t('accounting.txDesc'), t('common.farm'), t('accounting.txCategory'), t('accounting.txAmount')].map((h) => (
                     <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -268,7 +276,7 @@ export default function AccountingPage() {
                       <span className="text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{tx.category}</span>
                     </td>
                     <td className={`py-3 pr-3 font-bold whitespace-nowrap ${tx.amount > 0 ? 'text-green-700' : 'text-red-600'}`}>
-                      {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString('ar-SA')} ريال
+                      {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString('ar-SA')} {t('common.currency')}
                     </td>
                   </tr>
                 ))}

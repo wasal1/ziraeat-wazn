@@ -7,8 +7,7 @@ import StatusBadge from '../components/StatusBadge';
 import StatCard from '../components/StatCard';
 import { crops, cropMonthlyProduction } from '../data/mockData';
 import { BarChartMock } from '../components/MockChart';
-
-const CATEGORIES = ['الكل', 'خضروات', 'أعشاب'];
+import { useLang } from '../contexts/LangContext';
 
 const MARGIN_COLOR = (m: number) =>
   m >= 50 ? 'text-green-700 bg-green-50' :
@@ -16,6 +15,14 @@ const MARGIN_COLOR = (m: number) =>
              'text-amber-700 bg-amber-50';
 
 export default function CropsPage() {
+  const { t } = useLang();
+
+  const CATEGORIES = [
+    { value: 'الكل',    label: 'crops.categoryAll' },
+    { value: 'خضروات', label: 'crops.categoryVeg' },
+    { value: 'أعشاب',  label: 'crops.categoryHerbs' },
+  ];
+
   const [category, setCategory] = useState('الكل');
   const [selected, setSelected] = useState<number>(1);
 
@@ -29,17 +36,17 @@ export default function CropsPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="كتالوج المزروعات"
-        subtitle="إدارة أصناف المحاصيل وخصائصها"
-        action={<ActionButton size="sm" icon="➕">إضافة محصول</ActionButton>}
+        title={t('crops.catalogue')}
+        subtitle={t('page.crops.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('crops.addCrop')}</ActionButton>}
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="أنواع المحاصيل"    value={crops.length}           unit=""      icon="🌿" color="green"  />
-        <StatCard label="الدورات النشطة"    value={totalCycles}            unit=""      icon="🔄" color="sky"    />
-        <StatCard label="أعلى هامش ربح"     value={bestMargin.toFixed(1)}  unit="%"     icon="📈" color="amber"  />
-        <StatCard label="متوسط تكلفة الكجم" value={avgCostPerKg}           unit="ريال"  icon="💰" color="purple" />
+        <StatCard label={t('crops.totalTypes')}    value={crops.length}           unit=""      icon="🌿" color="green"  />
+        <StatCard label={t('crops.activeCycles')}  value={totalCycles}            unit=""      icon="🔄" color="sky"    />
+        <StatCard label={t('crops.bestMargin')}    value={bestMargin.toFixed(1)}  unit="%"     icon="📈" color="amber"  />
+        <StatCard label={t('crops.avgCostPerKg')}  value={avgCostPerKg}           unit={t('common.currency')} icon="💰" color="purple" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
@@ -49,15 +56,15 @@ export default function CropsPage() {
           <div className="flex gap-2">
             {CATEGORIES.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setCategory(cat)}
+                key={cat.value}
+                onClick={() => setCategory(cat.value)}
                 className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-                  category === cat
+                  category === cat.value
                     ? 'bg-green-600 text-white border-green-600 shadow-sm'
                     : 'bg-white text-gray-500 border-gray-200 hover:border-green-300'
                 }`}
               >
-                {cat}
+                {t(cat.label)}
               </button>
             ))}
           </div>
@@ -87,9 +94,9 @@ export default function CropsPage() {
                 </div>
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   {[
-                    { label: 'دورات نشطة', value: c.activeCycles },
-                    { label: 'ريال/كجم',   value: c.avgPricePerKg.toFixed(2) },
-                    { label: 'هامش الربح', value: c.avgMargin.toFixed(1) + '%' },
+                    { label: t('crops.activeCyclesLabel'), value: c.activeCycles },
+                    { label: t('crops.riyalPerKg'),        value: c.avgPricePerKg.toFixed(2) },
+                    { label: t('crops.profitMargin'),      value: c.avgMargin.toFixed(1) + '%' },
                   ].map((s) => (
                     <div key={s.label} className="bg-gray-50 rounded-lg py-1.5 px-2 text-center">
                       <p className="text-xs font-bold text-gray-700">{s.value}</p>
@@ -114,25 +121,25 @@ export default function CropsPage() {
               <div>
                 <h2 className="text-xl font-extrabold">{crop.name}</h2>
                 <p className="text-sm opacity-80">{crop.variety}</p>
-                <p className="text-xs opacity-70 mt-1">{crop.category} — {crop.activeCycles} دورة نشطة</p>
+                <p className="text-xs opacity-70 mt-1">{crop.category} — {crop.activeCycles} {t('crops.activeCyclesLabel')}</p>
               </div>
               <div className="mr-auto text-left">
                 <p className="text-2xl font-extrabold">{crop.avgMargin.toFixed(1)}%</p>
-                <p className="text-xs opacity-70">هامش الربح</p>
+                <p className="text-xs opacity-70">{t('crops.profitMargin')}</p>
               </div>
             </div>
           </div>
 
           {/* Specs Grid */}
-          <GlassCard title="الخصائص والمتطلبات" accent="green">
+          <GlassCard title={t('crops.specsCard')} accent="green">
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: 'فترة النمو',          value: `${crop.growthDays.min}–${crop.growthDays.max} يوم` },
-                { label: 'نطاق الحرارة',         value: crop.tempRange },
-                { label: 'الرطوبة المثلى',       value: crop.humidRange },
-                { label: 'الري اليومي',          value: crop.waterPerDay },
-                { label: 'متوسط الإنتاج/م²',    value: `${crop.avgYieldPerM2} كجم` },
-                { label: 'تكلفة الكجم',          value: `${crop.avgCostPerKg} ريال` },
+                { label: t('crops.growthPeriod'),   value: `${crop.growthDays.min}–${crop.growthDays.max} ${t('crops.day')}` },
+                { label: t('crops.tempRange'),       value: crop.tempRange },
+                { label: t('crops.idealHumidity'),   value: crop.humidRange },
+                { label: t('crops.dailyIrrigation'), value: crop.waterPerDay },
+                { label: t('crops.avgYieldM2'),      value: `${crop.avgYieldPerM2} ${t('common.kg')}` },
+                { label: t('crops.costPerKg'),       value: `${crop.avgCostPerKg} ${t('common.currency')}` },
               ].map((s) => (
                 <div key={s.label} className="bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
                   <span className="text-xs text-gray-500">{s.label}</span>
@@ -148,7 +155,7 @@ export default function CropsPage() {
           </GlassCard>
 
           {/* Profitability */}
-          <GlassCard title="مقارنة الربحية" accent="sky">
+          <GlassCard title={t('crops.profitability')} accent="sky">
             <div className="space-y-3">
               {crops.map((c) => {
                 const maxMargin = Math.max(...crops.map((x) => x.avgMargin));
@@ -173,14 +180,14 @@ export default function CropsPage() {
           </GlassCard>
 
           {/* Monthly Production Chart */}
-          <GlassCard title="الإنتاج الشهري — مقارنة المحاصيل الرئيسية" subtitle="كيلوجرام" accent="purple">
+          <GlassCard title={t('crops.monthlyProd')} subtitle={t('common.kg')} accent="purple">
             <BarChartMock
               data={cropMonthlyProduction}
               xKey="month"
               yKey="خيار"
               color="#16a34a"
               height={180}
-              label="كجم"
+              label={t('common.kg')}
             />
           </GlassCard>
         </div>

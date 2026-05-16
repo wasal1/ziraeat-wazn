@@ -7,8 +7,7 @@ import StatusBadge from '../components/StatusBadge';
 import StatCard from '../components/StatCard';
 import { workers, workerStats, laborCostChart } from '../data/mockData';
 import { LineChartMock } from '../components/MockChart';
-
-const STATUS_FILTER = ['الكل', 'حاضر', 'في مهمة', 'إجازة'];
+import { useLang } from '../contexts/LangContext';
 
 const ROLE_ICONS: Record<string, string> = {
   'مشرف مزرعة': '👨‍💼',
@@ -30,6 +29,15 @@ const NAT_FLAG: Record<string, string> = {
 };
 
 export default function WorkersPage() {
+  const { t } = useLang();
+
+  const STATUS_FILTER = [
+    { value: 'الكل',    label: 'workers.filterAll' },
+    { value: 'حاضر',   label: 'workers.filterPresent' },
+    { value: 'في مهمة',label: 'workers.filterMission' },
+    { value: 'إجازة',  label: 'workers.filterLeave' },
+  ];
+
   const [statusFilter, setStatusFilter] = useState('الكل');
 
   const filtered = workers.filter(
@@ -39,29 +47,29 @@ export default function WorkersPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="إدارة العمال"
-        subtitle="فرق العمل والحضور وتكاليف العمالة"
-        action={<ActionButton size="sm" icon="➕">إضافة عامل</ActionButton>}
+        title={t('page.workers.title')}
+        subtitle={t('page.workers.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('workers.addWorker')}</ActionButton>}
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="إجمالي العمال"      value={workerStats.total}       unit=""      icon="👷"  color="green" />
-        <StatCard label="حاضرون اليوم"       value={workerStats.present}     unit=""      icon="✅"  color="sky"   />
-        <StatCard label="تكلفة العمالة / شهر" value={workerStats.monthlyLabor} unit="ريال" icon="💰"  color="amber"
+        <StatCard label={t('workers.total')}            value={workerStats.total}        unit=""                    icon="👷"  color="green" />
+        <StatCard label={t('workers.presentToday')}     value={workerStats.present}      unit=""                    icon="✅"  color="sky"   />
+        <StatCard label={t('workers.laborCostMonth')}   value={workerStats.monthlyLabor} unit={t('common.currency')} icon="💰"  color="amber"
           trend={{ val: 4, up: true }}
         />
-        <StatCard label="متوسط ساعات العمل"  value={workerStats.avgHours}    unit="ساعة"  icon="⏱️"  color="purple" />
+        <StatCard label={t('workers.avgWorkHours')}     value={workerStats.avgHours}     unit={t('common.hour')}    icon="⏱️"  color="purple" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Status Summary */}
-        <GlassCard title="ملخص الحضور" subtitle="اليوم" accent="green">
+        <GlassCard title={t('workers.attendanceSummary')} subtitle={t('common.today')} accent="green">
           <div className="space-y-3">
             {[
-              { label: 'حاضر',     count: workerStats.present,   color: 'bg-green-100 text-green-700', icon: '✅' },
-              { label: 'في مهمة',  count: workerStats.onMission, color: 'bg-amber-100 text-amber-700', icon: '🚜' },
-              { label: 'إجازة',   count: workerStats.onLeave,   color: 'bg-gray-100 text-gray-600',   icon: '🏠' },
+              { label: t('workers.present'),   count: workerStats.present,   color: 'bg-green-100 text-green-700', icon: '✅' },
+              { label: t('workers.onMission'), count: workerStats.onMission, color: 'bg-amber-100 text-amber-700', icon: '🚜' },
+              { label: t('workers.onLeave'),   count: workerStats.onLeave,   color: 'bg-gray-100 text-gray-600',   icon: '🏠' },
             ].map((s) => (
               <div key={s.label} className="flex items-center gap-3 p-3 bg-gray-50/70 rounded-xl">
                 <span className={`w-9 h-9 rounded-xl ${s.color} flex items-center justify-center text-lg flex-shrink-0`}>{s.icon}</span>
@@ -72,7 +80,7 @@ export default function WorkersPage() {
           </div>
 
           <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-xs font-semibold text-gray-500 mb-3">توزيع الجنسيات</p>
+            <p className="text-xs font-semibold text-gray-500 mb-3">{t('workers.nationalityDist')}</p>
             <div className="space-y-2">
               {Object.entries(
                 workers.reduce<Record<string, number>>((acc, w) => {
@@ -96,13 +104,13 @@ export default function WorkersPage() {
         </GlassCard>
 
         {/* Labor Cost Chart */}
-        <GlassCard title="تكلفة العمالة الشهرية" subtitle="ريال سعودي" accent="sky" className="lg:col-span-2">
-          <LineChartMock data={laborCostChart} xKey="month" yKey="cost" color="#0ea5e9" height={160} label="ريال" />
+        <GlassCard title={t('workers.monthlyLaborCost')} subtitle={t('common.currency')} accent="sky" className="lg:col-span-2">
+          <LineChartMock data={laborCostChart} xKey="month" yKey="cost" color="#0ea5e9" height={160} label={t('common.currency')} />
           <div className="mt-3 grid grid-cols-3 gap-3">
             {[
-              { label: 'المتوسط الشهري', value: Math.round(laborCostChart.reduce((s, x) => s + x.cost, 0) / laborCostChart.length).toLocaleString('ar-SA') + ' ريال' },
-              { label: 'أعلى شهر',       value: Math.max(...laborCostChart.map((x) => x.cost)).toLocaleString('ar-SA') + ' ريال' },
-              { label: 'أدنى شهر',       value: Math.min(...laborCostChart.map((x) => x.cost)).toLocaleString('ar-SA') + ' ريال' },
+              { label: t('workers.monthAvg'), value: Math.round(laborCostChart.reduce((s, x) => s + x.cost, 0) / laborCostChart.length).toLocaleString('ar-SA') + ' ' + t('common.currency') },
+              { label: t('workers.highMonth'), value: Math.max(...laborCostChart.map((x) => x.cost)).toLocaleString('ar-SA') + ' ' + t('common.currency') },
+              { label: t('workers.lowMonth'),  value: Math.min(...laborCostChart.map((x) => x.cost)).toLocaleString('ar-SA') + ' ' + t('common.currency') },
             ].map((s) => (
               <div key={s.label} className="bg-sky-50 rounded-xl p-3 text-center">
                 <p className="text-sm font-bold text-sky-700">{s.value}</p>
@@ -115,20 +123,20 @@ export default function WorkersPage() {
 
       {/* Workers List */}
       <GlassCard
-        title="قائمة العمال"
+        title={t('workers.list')}
         subtitle={`${filtered.length} موظف`}
         accent="purple"
         action={
           <div className="flex gap-1">
-            {STATUS_FILTER.map((s) => (
+            {STATUS_FILTER.map((sf) => (
               <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
+                key={sf.value}
+                onClick={() => setStatusFilter(sf.value)}
                 className={`text-[11px] px-2.5 py-1 rounded-lg transition-colors ${
-                  statusFilter === s ? 'bg-purple-100 text-purple-700 font-semibold' : 'text-gray-400 hover:bg-gray-100'
+                  statusFilter === sf.value ? 'bg-purple-100 text-purple-700 font-semibold' : 'text-gray-400 hover:bg-gray-100'
                 }`}
               >
-                {s}
+                {t(sf.label)}
               </button>
             ))}
           </div>
@@ -158,31 +166,31 @@ export default function WorkersPage() {
               <div className="flex-shrink-0 text-left space-y-1">
                 <StatusBadge status={w.status} size="xs" />
                 <p className="text-[10px] text-gray-400 text-center">
-                  {w.hoursToday > 0 ? `${w.hoursToday} ساعات اليوم` : '—'}
+                  {w.hoursToday > 0 ? `${w.hoursToday} ${t('common.hours')}` : '—'}
                 </p>
               </div>
 
               {/* Salary */}
               <div className="flex-shrink-0 text-left">
                 <p className="text-sm font-bold text-gray-800">{w.salary.toLocaleString('ar-SA')}</p>
-                <p className="text-[10px] text-gray-400">ريال/شهر</p>
+                <p className="text-[10px] text-gray-400">{t('common.riyalMonth')}</p>
               </div>
             </div>
           ))}
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-gray-400 text-sm py-8">لا يوجد عمال بهذه الحالة</p>
+          <p className="text-center text-gray-400 text-sm py-8">{t('workers.noWorker')}</p>
         )}
       </GlassCard>
 
       {/* Attendance Summary Table */}
-      <GlassCard title="ملخص العمل هذا الشهر" accent="amber">
+      <GlassCard title={t('workers.monthSummary')} accent="amber">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-right border-b border-gray-100">
-                {['العامل', 'الدور', 'المزرعة', 'ساعات الشهر', 'الراتب', 'المهام', 'الحالة'].map((h) => (
+                {[t('common.worker'), t('workers.role'), t('common.farm'), t('workers.monthHours'), t('workers.salary'), t('workers.tasks'), t('common.status')].map((h) => (
                   <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -199,8 +207,8 @@ export default function WorkersPage() {
                   </td>
                   <td className="py-3 pr-3 text-xs text-gray-500 whitespace-nowrap">{w.role}</td>
                   <td className="py-3 pr-3 text-xs text-gray-400 whitespace-nowrap">{w.farm.replace('مزرعة ', '')}</td>
-                  <td className="py-3 pr-3 font-medium text-gray-700 whitespace-nowrap">{w.hoursMonth} ساعة</td>
-                  <td className="py-3 pr-3 font-bold text-green-700 whitespace-nowrap">{w.salary.toLocaleString('ar-SA')} ريال</td>
+                  <td className="py-3 pr-3 font-medium text-gray-700 whitespace-nowrap">{w.hoursMonth} {t('common.hour')}</td>
+                  <td className="py-3 pr-3 font-bold text-green-700 whitespace-nowrap">{w.salary.toLocaleString('ar-SA')} {t('common.currency')}</td>
                   <td className="py-3 pr-3 whitespace-nowrap">
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-700 text-xs font-bold">{w.tasks}</span>
                   </td>

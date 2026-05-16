@@ -5,6 +5,7 @@ import SectionHeader from '../components/SectionHeader';
 import ActionButton from '../components/ActionButton';
 import StatCard from '../components/StatCard';
 import { inventoryItems, inventoryStats, purchaseOrders } from '../data/mockData';
+import { useLang } from '../contexts/LangContext';
 
 const CATEGORIES = ['الكل', 'بذور', 'أسمدة', 'مبيدات', 'تعبئة', 'مواد صرف'];
 
@@ -29,9 +30,12 @@ const PO_STATUS_CFG: Record<string, string> = {
   'بانتظار موافقة':   'bg-amber-50 text-amber-700 border-amber-100',
 };
 
-const TABS = ['المخزون', 'طلبات الشراء'];
-
 export default function InventoryPage() {
+  const { t } = useLang();
+  const TABS = [
+    { value: 'المخزون',       label: 'inv.tabInventory' },
+    { value: 'طلبات الشراء',  label: 'inv.tabOrders'    },
+  ];
   const [tab, setTab]     = useState('المخزون');
   const [cat, setCat]     = useState('الكل');
   const [statusF, setStatusF] = useState('الكل');
@@ -48,22 +52,22 @@ export default function InventoryPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="المخزون"
-        subtitle="إدارة البذور والأسمدة والمبيدات وجميع المستلزمات"
+        title={t('page.inventory.title')}
+        subtitle={t('page.inventory.sub')}
         action={
           <div className="flex gap-2">
-            <ActionButton variant="secondary" size="sm" icon="🛒">طلب شراء</ActionButton>
-            <ActionButton size="sm" icon="➕">إضافة صنف</ActionButton>
+            <ActionButton variant="secondary" size="sm" icon="🛒">{t('inv.buyOrder')}</ActionButton>
+            <ActionButton size="sm" icon="➕">{t('inv.addItem')}</ActionButton>
           </div>
         }
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="إجمالي الأصناف"      value={inventoryStats.totalItems}  unit=""     icon="📦" color="green"  />
-        <StatCard label="قيمة المخزون"         value={Math.round(inventoryStats.totalValue / 1000).toString() + 'K'} unit="ريال" icon="💰" color="sky" />
-        <StatCard label="أصناف بمخزون منخفض"  value={inventoryStats.lowStockCount} unit=""   icon="⚠️" color="red"    />
-        <StatCard label="الفئات"              value={inventoryStats.categories}  unit=""     icon="🗂️" color="purple" />
+        <StatCard label={t('inv.totalItems')} value={inventoryStats.totalItems}  unit=""                    icon="📦" color="green"  />
+        <StatCard label={t('inv.stockValue')} value={Math.round(inventoryStats.totalValue / 1000).toString() + 'K'} unit={t('common.currency')} icon="💰" color="sky" />
+        <StatCard label={t('inv.lowStock')}   value={inventoryStats.lowStockCount} unit=""                 icon="⚠️" color="red"    />
+        <StatCard label={t('inv.categories')} value={inventoryStats.categories}  unit=""                    icon="🗂️" color="purple" />
       </div>
 
       {/* Low stock alert strip */}
@@ -71,7 +75,7 @@ export default function InventoryPage() {
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
           <span className="text-2xl flex-shrink-0">🚨</span>
           <div className="flex-1">
-            <p className="font-bold text-red-700 text-sm mb-2">{lowItems.length} أصناف تحتاج تجديداً فورياً</p>
+            <p className="font-bold text-red-700 text-sm mb-2">{lowItems.length} {t('inv.needsRefill')}</p>
             <div className="flex flex-wrap gap-2">
               {lowItems.map((i) => (
                 <span key={i.id} className={`text-xs px-2.5 py-1 rounded-full border font-medium ${STATUS_CFG[i.status]}`}>
@@ -85,18 +89,18 @@ export default function InventoryPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100/70 rounded-xl p-1 w-fit">
-        {TABS.map((t) => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === t ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >{t}</button>
+        {TABS.map((tb) => (
+          <button key={tb.value} onClick={() => setTab(tb.value)}
+            className={`text-xs font-semibold px-4 py-2 rounded-lg transition-all ${tab === tb.value ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >{t(tb.label)}</button>
         ))}
       </div>
 
       {/* ─── المخزون ─── */}
       {tab === 'المخزون' && (
         <GlassCard
-          title="قائمة المخزون"
-          subtitle={`${filtered.length} صنف — قيمة: ${filtered.reduce((s, i) => s + i.totalValue, 0).toLocaleString('ar-SA')} ريال`}
+          title={t('inv.listTitle')}
+          subtitle={`${filtered.length} صنف — قيمة: ${filtered.reduce((s, i) => s + i.totalValue, 0).toLocaleString('ar-SA')} ${t('common.currency')}`}
           accent="green"
           action={
             <div className="flex gap-1 items-center flex-wrap">
@@ -121,7 +125,7 @@ export default function InventoryPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-right">
-                  {['الصنف', 'الفئة', 'الكمية', 'الحد الأدنى', 'سعر الوحدة', 'القيمة الإجمالية', 'الموقع', 'آخر تحديث', 'الحالة'].map((h) => (
+                  {[t('common.name'), t('expenses.category'), t('common.quantity'), t('inv.minLimit'), t('inv.unitPrice'), t('inv.totalValue'), t('inv.location'), t('inv.lastUpdated'), t('common.status')].map((h) => (
                     <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -162,7 +166,7 @@ export default function InventoryPage() {
 
           {/* Category breakdown */}
           <div className="mt-5 pt-5 border-t border-gray-100">
-            <p className="text-xs font-semibold text-gray-500 mb-3">توزيع القيمة حسب الفئة</p>
+            <p className="text-xs font-semibold text-gray-500 mb-3">{t('inv.valueByCat')}</p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {CATEGORIES.filter((c) => c !== 'الكل').map((c) => {
                 const catItems = inventoryItems.filter((i) => i.category === c);
@@ -183,10 +187,10 @@ export default function InventoryPage() {
       {/* ─── طلبات الشراء ─── */}
       {tab === 'طلبات الشراء' && (
         <GlassCard
-          title="طلبات الشراء"
-          subtitle={`${purchaseOrders.length} طلب — إجمالي: ${poTotal.toLocaleString('ar-SA')} ريال`}
+          title={t('inv.ordersTitle')}
+          subtitle={`${purchaseOrders.length} طلب — إجمالي: ${poTotal.toLocaleString('ar-SA')} ${t('common.currency')}`}
           accent="sky"
-          action={<ActionButton size="sm" icon="➕">طلب جديد</ActionButton>}
+          action={<ActionButton size="sm" icon="➕">{t('inv.newOrder')}</ActionButton>}
         >
           <div className="space-y-3">
             {purchaseOrders.map((po) => (
@@ -206,15 +210,15 @@ export default function InventoryPage() {
                 <div className="flex items-center gap-4 text-sm flex-shrink-0">
                   <div className="text-center">
                     <p className="font-semibold text-gray-700">{po.qty} {po.unit}</p>
-                    <p className="text-[10px] text-gray-400">الكمية</p>
+                    <p className="text-[10px] text-gray-400">{t('inv.orderQty')}</p>
                   </div>
                   <div className="text-center">
-                    <p className="font-bold text-green-700">{po.cost.toLocaleString('ar-SA')} ريال</p>
-                    <p className="text-[10px] text-gray-400">التكلفة</p>
+                    <p className="font-bold text-green-700">{po.cost.toLocaleString('ar-SA')} {t('common.currency')}</p>
+                    <p className="text-[10px] text-gray-400">{t('common.cost')}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-gray-400">{po.date}</p>
-                    <p className="text-[10px] text-gray-400">التاريخ</p>
+                    <p className="text-[10px] text-gray-400">{t('common.date')}</p>
                   </div>
                   <span className={`text-xs px-2.5 py-1.5 rounded-full border font-medium whitespace-nowrap ${PO_STATUS_CFG[po.status]}`}>
                     {po.status}
@@ -227,9 +231,9 @@ export default function InventoryPage() {
           {/* PO Summary */}
           <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-3">
             {[
-              { label: 'مكتملة',            count: purchaseOrders.filter((p) => p.status === 'مكتمل').length,            color: 'text-green-700 bg-green-50' },
-              { label: 'قيد التنفيذ',       count: purchaseOrders.filter((p) => ['قيد التوريد','معتمد'].includes(p.status)).length, color: 'text-sky-700 bg-sky-50' },
-              { label: 'بانتظار موافقة',    count: purchaseOrders.filter((p) => p.status === 'بانتظار موافقة').length,   color: 'text-amber-700 bg-amber-50' },
+              { label: t('inv.orderCompleted'),  count: purchaseOrders.filter((p) => p.status === 'مكتمل').length,            color: 'text-green-700 bg-green-50' },
+              { label: t('inv.orderInProgress'), count: purchaseOrders.filter((p) => ['قيد التوريد','معتمد'].includes(p.status)).length, color: 'text-sky-700 bg-sky-50' },
+              { label: t('inv.orderPending'),    count: purchaseOrders.filter((p) => p.status === 'بانتظار موافقة').length,   color: 'text-amber-700 bg-amber-50' },
             ].map((s) => (
               <div key={s.label} className={`${s.color} rounded-xl p-3 text-center`}>
                 <p className="text-xl font-extrabold">{s.count}</p>

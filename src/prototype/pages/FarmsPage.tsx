@@ -6,10 +6,18 @@ import ActionButton from '../components/ActionButton';
 import StatusBadge from '../components/StatusBadge';
 import StatCard from '../components/StatCard';
 import { farms, fields } from '../data/mockData';
-
-const FIELD_TYPES = ['الكل', 'بيت مكيف', 'بيت مظلل', 'حقل مكشوف'];
+import { useLang } from '../contexts/LangContext';
 
 export default function FarmsPage() {
+  const { t } = useLang();
+
+  const FIELD_TYPES = [
+    { value: 'الكل',       label: 'common.all' },
+    { value: 'بيت مكيف',  label: 'farms.typeAC' },
+    { value: 'بيت مظلل',  label: 'farms.typeShaded' },
+    { value: 'حقل مكشوف', label: 'farms.typeOpen' },
+  ];
+
   const [selectedFarm, setSelectedFarm] = useState<number | null>(null);
   const [typeFilter, setTypeFilter] = useState('الكل');
 
@@ -22,17 +30,17 @@ export default function FarmsPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="المزارع والحقول"
-        subtitle="إدارة وتتبع جميع المواقع الزراعية"
-        action={<ActionButton size="sm" icon="➕">إضافة مزرعة</ActionButton>}
+        title={t('page.farms.title')}
+        subtitle={t('page.farms.sub')}
+        action={<ActionButton size="sm" icon="➕">{t('farms.addFarm')}</ActionButton>}
       />
 
       {/* KPI Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="إجمالي المزارع"    value={farms.length}                          unit="" icon="🏡" color="green" />
-        <StatCard label="البيوت والحقول"     value={fields.length}                         unit="" icon="🏠" color="sky" />
-        <StatCard label="الإنتاج اليومي"    value={(farms.reduce((s, f) => s + f.dailyProduction, 0)).toLocaleString('ar-SA')} unit="كجم" icon="📦" color="amber" />
-        <StatCard label="إيرادات هذا الشهر" value={(farms.reduce((s, f) => s + f.monthlyRevenue, 0) / 1000).toFixed(0) + 'K'} unit="ريال" icon="💰" color="purple" />
+        <StatCard label={t('farms.totalFarms')}    value={farms.length}                          unit="" icon="🏡" color="green" />
+        <StatCard label={t('farms.fieldsAndHouses')}     value={fields.length}                         unit="" icon="🏠" color="sky" />
+        <StatCard label={t('farms.dailyProduction')}    value={(farms.reduce((s, f) => s + f.dailyProduction, 0)).toLocaleString('ar-SA')} unit={t('common.kg')} icon="📦" color="amber" />
+        <StatCard label={t('farms.monthlyRevenue')} value={(farms.reduce((s, f) => s + f.monthlyRevenue, 0) / 1000).toFixed(0) + 'K'} unit={t('common.currency')} icon="💰" color="purple" />
       </div>
 
       {/* Farm Cards */}
@@ -62,9 +70,9 @@ export default function FarmsPage() {
             <div className="px-5 py-4 space-y-3">
               <div className="grid grid-cols-3 gap-3 text-center">
                 {[
-                  { label: 'بيوت', value: farm.greenhouses },
-                  { label: 'حقول',  value: farm.fields },
-                  { label: 'دورات نشطة', value: farm.activeCycles },
+                  { label: t('farms.greenhouses'), value: farm.greenhouses },
+                  { label: t('farms.fields'),       value: farm.fields },
+                  { label: t('farms.activeCycles'), value: farm.activeCycles },
                 ].map((s) => (
                   <div key={s.label} className="bg-gray-50 rounded-xl py-2.5">
                     <p className="text-lg font-extrabold text-gray-800">{s.value}</p>
@@ -75,12 +83,12 @@ export default function FarmsPage() {
 
               <div className="flex items-center justify-between text-sm border-t border-gray-50 pt-3">
                 <div>
-                  <p className="text-[10px] text-gray-400">الإنتاج اليومي</p>
-                  <p className="font-bold text-green-700">{farm.dailyProduction.toLocaleString('ar-SA')} كجم</p>
+                  <p className="text-[10px] text-gray-400">{t('farms.fieldsDailyProd')}</p>
+                  <p className="font-bold text-green-700">{farm.dailyProduction.toLocaleString('ar-SA')} {t('common.kg')}</p>
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] text-gray-400">إيرادات الشهر</p>
-                  <p className="font-bold text-sky-700">{farm.monthlyRevenue.toLocaleString('ar-SA')} ريال</p>
+                  <p className="text-[10px] text-gray-400">{t('farms.monthRevenue')}</p>
+                  <p className="font-bold text-sky-700">{farm.monthlyRevenue.toLocaleString('ar-SA')} {t('common.currency')}</p>
                 </div>
               </div>
 
@@ -106,7 +114,7 @@ export default function FarmsPage() {
 
       {/* Fields Table */}
       <GlassCard
-        title="الحقول والبيوت المحمية"
+        title={t('farms.fieldsTable')}
         subtitle={`${filteredFields.length} موقع`}
         accent="sky"
         action={
@@ -117,7 +125,7 @@ export default function FarmsPage() {
                 onClick={() => setSelectedFarm(null)}
                 className={`text-[11px] px-2.5 py-1 rounded-lg transition-colors ${selectedFarm === null ? 'bg-sky-100 text-sky-700 font-semibold' : 'text-gray-400 hover:bg-gray-100'}`}
               >
-                الكل
+                {t('common.all')}
               </button>
               {farms.map((f) => (
                 <button
@@ -134,17 +142,17 @@ export default function FarmsPage() {
       >
         {/* Type filter chips */}
         <div className="flex gap-2 mb-4 flex-wrap">
-          {FIELD_TYPES.map((t) => (
+          {FIELD_TYPES.map((ft) => (
             <button
-              key={t}
-              onClick={() => setTypeFilter(t)}
+              key={ft.value}
+              onClick={() => setTypeFilter(ft.value)}
               className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-                typeFilter === t
+                typeFilter === ft.value
                   ? 'bg-green-600 text-white border-green-600 shadow-sm'
                   : 'bg-white text-gray-500 border-gray-200 hover:border-green-300'
               }`}
             >
-              {t}
+              {t(ft.label)}
             </button>
           ))}
         </div>
@@ -153,7 +161,7 @@ export default function FarmsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-right border-b border-gray-100">
-                {['الاسم', 'المزرعة', 'النوع', 'المساحة', 'المحصول', 'الدورة', 'الإنتاج اليومي', 'الحالة'].map((h) => (
+                {[t('common.name'), t('common.farm'), t('common.type'), t('farms.area'), t('common.crop'), t('farms.cycle'), t('farms.dailyProduction'), t('common.status')].map((h) => (
                   <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -170,7 +178,7 @@ export default function FarmsPage() {
                   <td className="py-3 pr-3 font-medium text-gray-700 whitespace-nowrap">{f.crop}</td>
                   <td className="py-3 pr-3 text-gray-400 text-xs whitespace-nowrap">{f.cycle}</td>
                   <td className="py-3 pr-3 font-bold text-green-700 whitespace-nowrap">
-                    {f.production > 0 ? `${f.production} كجم` : '—'}
+                    {f.production > 0 ? `${f.production} ${t('common.kg')}` : '—'}
                   </td>
                   <td className="py-3 pr-3 whitespace-nowrap"><StatusBadge status={f.status} size="xs" /></td>
                 </tr>
@@ -178,7 +186,7 @@ export default function FarmsPage() {
             </tbody>
           </table>
           {filteredFields.length === 0 && (
-            <p className="text-center text-gray-400 text-sm py-8">لا توجد نتائج</p>
+            <p className="text-center text-gray-400 text-sm py-8">{t('common.noResults')}</p>
           )}
         </div>
       </GlassCard>

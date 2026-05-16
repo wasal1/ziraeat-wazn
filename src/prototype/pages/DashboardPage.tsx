@@ -10,17 +10,19 @@ import {
   dashboardKPIs, dashboardAlerts, weeklyProduction,
   cropDistribution, topCrops, topGreenhouses,
 } from '../data/mockData';
+import { useLang } from '../contexts/LangContext';
 
 export default function DashboardPage() {
+  const { t } = useLang();
   const firstRow = dashboardKPIs.slice(0, 4);
   const secondRow = dashboardKPIs.slice(4);
 
   return (
     <PageContainer>
       <SectionHeader
-        title="لوحة التحكم الرئيسية"
+        title={t('page.dashboard.title')}
         subtitle="آخر تحديث: اليوم — 15 مايو 2026"
-        action={<ActionButton variant="secondary" size="sm" icon="📥">تصدير تقرير</ActionButton>}
+        action={<ActionButton variant="secondary" size="sm" icon="📥">{t('common.exportReport')}</ActionButton>}
       />
 
       {/* Row 1 — farm stats */}
@@ -39,9 +41,9 @@ export default function DashboardPage() {
 
       {/* Alerts */}
       <GlassCard accent="red"
-        title="التنبيهات الحرجة"
-        subtitle={`${dashboardAlerts.length} تنبيهات تحتاج اهتمامك`}
-        action={<span className="text-xs text-green-600 font-medium cursor-pointer hover:underline">عرض الكل</span>}
+        title={t('dashboard.criticalAlerts')}
+        subtitle={`${dashboardAlerts.length} ${t('dashboard.alertsNeedAttention')}`}
+        action={<span className="text-xs text-green-600 font-medium cursor-pointer hover:underline">{t('common.viewAll')}</span>}
       >
         <div className="space-y-2.5">
           {dashboardAlerts.map((a) => (
@@ -52,11 +54,11 @@ export default function DashboardPage() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        <GlassCard title="الإنتاج الأسبوعي" subtitle="كيلوجرام" className="lg:col-span-3" accent="green">
-          <BarChartMock data={weeklyProduction} xKey="day" yKey="value" color="#16a34a" height={210} label="كجم" />
+        <GlassCard title={t('dashboard.weeklyProduction')} subtitle={t('common.kg')} className="lg:col-span-3" accent="green">
+          <BarChartMock data={weeklyProduction} xKey="day" yKey="value" color="#16a34a" height={210} label={t('common.kg')} />
         </GlassCard>
 
-        <GlassCard title="توزيع المحاصيل" subtitle="حسب النوع" className="lg:col-span-2" accent="sky">
+        <GlassCard title={t('dashboard.cropDistribution')} subtitle={t('dashboard.byType')} className="lg:col-span-2" accent="sky">
           <DonutChartMock data={cropDistribution} height={230} />
         </GlassCard>
       </div>
@@ -64,8 +66,8 @@ export default function DashboardPage() {
       {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Top crops */}
-        <GlassCard title="أكثر المحاصيل ربحية" accent="green"
-          action={<span className="text-xs text-gray-400">هذا الموسم</span>}
+        <GlassCard title={t('dashboard.topProfitCrops')} accent="green"
+          action={<span className="text-xs text-gray-400">{t('dashboard.thisSeason')}</span>}
         >
           <div className="space-y-4">
             {topCrops.map((crop, i) => {
@@ -89,7 +91,7 @@ export default function DashboardPage() {
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <p className="text-[10px] text-gray-400 mt-1">إنتاج: {crop.production.toLocaleString('ar-SA')} كجم</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{t('dashboard.production')} {crop.production.toLocaleString('ar-SA')} {t('common.kg')}</p>
                   </div>
                 </div>
               );
@@ -98,8 +100,8 @@ export default function DashboardPage() {
         </GlassCard>
 
         {/* Top greenhouses */}
-        <GlassCard title="أعلى البيوت المحمية إنتاجاً" accent="sky"
-          action={<span className="text-xs text-gray-400">اليوم</span>}
+        <GlassCard title={t('dashboard.topGreenhouses')} accent="sky"
+          action={<span className="text-xs text-gray-400">{t('common.today')}</span>}
         >
           <div className="divide-y divide-gray-50">
             {topGreenhouses.map((gh, i) => (
@@ -112,8 +114,8 @@ export default function DashboardPage() {
                   <p className="text-xs text-gray-400">{gh.crop}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-sm font-bold text-gray-800">{gh.production} كجم</p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">اليوم</p>
+                  <p className="text-sm font-bold text-gray-800">{gh.production} {t('common.kg')}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{t('common.today')}</p>
                 </div>
                 <StatusBadge status={gh.status} size="xs" />
               </div>

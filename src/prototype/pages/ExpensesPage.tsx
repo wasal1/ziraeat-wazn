@@ -6,6 +6,7 @@ import ActionButton from '../components/ActionButton';
 import StatCard from '../components/StatCard';
 import { expenseRecords, budgetVsActual, expenseMonthlyChart } from '../data/mockData';
 import { LineChartMock } from '../components/MockChart';
+import { useLang } from '../contexts/LangContext';
 
 const CATEGORIES = ['الكل', 'عمالة', 'أسمدة', 'كهرباء', 'مياه', 'مبيدات', 'صيانة', 'تعبئة ونقل', 'إيجار', 'شتلات وبذور', 'معدات'];
 
@@ -21,6 +22,7 @@ const CAT_ICON: Record<string, string> = {
 };
 
 export default function ExpensesPage() {
+  const { t } = useLang();
   const [catFilter, setCatFilter] = useState('الكل');
   const [statusFilter, setStatusFilter] = useState('الكل');
 
@@ -40,26 +42,26 @@ export default function ExpensesPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="المصروفات التفصيلية"
-        subtitle="متابعة المصروفات مقارنة بالميزانية"
+        title={t('page.expenses.title')}
+        subtitle={t('page.expenses.sub')}
         action={
           <div className="flex gap-2">
-            <ActionButton variant="secondary" size="sm" icon="📥">تصدير</ActionButton>
-            <ActionButton size="sm" icon="➕">إضافة مصروف</ActionButton>
+            <ActionButton variant="secondary" size="sm" icon="📥">{t('common.export')}</ActionButton>
+            <ActionButton size="sm" icon="➕">{t('expenses.addExpense')}</ActionButton>
           </div>
         }
       />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="مصروفات هذا الشهر"  value={(monthlyTotal / 1000).toFixed(1) + 'K'} unit="ريال" icon="💸" color="amber" />
-        <StatCard label="معلقة الدفع"         value={pendingTotal}                            unit="ريال" icon="⏳" color="red"   />
-        <StatCard label="فئات تجاوزت الميزانية" value={overBudget}                           unit=""     icon="⚠️" color="purple" />
-        <StatCard label="أعلى فئة"             value="عمالة"                                  unit=""     icon="👷" color="sky"   />
+        <StatCard label={t('expenses.monthlyTotal')}  value={(monthlyTotal / 1000).toFixed(1) + 'K'} unit={t('common.currency')} icon="💸" color="amber" />
+        <StatCard label={t('expenses.pending')}        value={pendingTotal}                            unit={t('common.currency')} icon="⏳" color="red"   />
+        <StatCard label={t('expenses.overBudget')}     value={overBudget}                              unit=""                    icon="⚠️" color="purple" />
+        <StatCard label={t('expenses.topCategory')}    value="عمالة"                                   unit=""                    icon="👷" color="sky"   />
       </div>
 
       {/* Budget vs Actual */}
-      <GlassCard title="الميزانية مقابل الفعلي" subtitle="هذا الشهر" accent="amber">
+      <GlassCard title={t('expenses.budgetVsActual')} subtitle={t('common.month')} accent="amber">
         <div className="space-y-4">
           {budgetVsActual.map((b) => {
             const pct    = Math.min((b.actual / b.budget) * 100, 120);
@@ -73,9 +75,9 @@ export default function ExpensesPage() {
                     <span className="font-medium text-gray-700">{b.category}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
-                    <span className="text-gray-400">ميزانية: {b.budget.toLocaleString('ar-SA')}</span>
+                    <span className="text-gray-400">{t('expenses.budget')} {b.budget.toLocaleString('ar-SA')}</span>
                     <span className={`font-bold ${over ? 'text-red-600' : 'text-green-600'}`}>
-                      فعلي: {b.actual.toLocaleString('ar-SA')}
+                      {t('expenses.actual')} {b.actual.toLocaleString('ar-SA')}
                     </span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${over ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
                       {over ? '▲' : '▼'} {diffPct}%
@@ -103,13 +105,13 @@ export default function ExpensesPage() {
       </GlassCard>
 
       {/* Monthly Trend */}
-      <GlassCard title="تطور المصروفات الشهرية" subtitle="ريال" accent="sky">
-        <LineChartMock data={expenseMonthlyChart} xKey="month" yKey="amount" color="#f59e0b" height={180} label="ريال" />
+      <GlassCard title={t('expenses.monthlyTrend')} subtitle={t('common.currency')} accent="sky">
+        <LineChartMock data={expenseMonthlyChart} xKey="month" yKey="amount" color="#f59e0b" height={180} label={t('common.currency')} />
       </GlassCard>
 
       {/* Records Table */}
-      <GlassCard title="سجل المصروفات"
-        subtitle={`${filtered.length} سجل — ${totalFiltered.toLocaleString('ar-SA')} ريال`}
+      <GlassCard title={t('expenses.log')}
+        subtitle={`${filtered.length} سجل — ${totalFiltered.toLocaleString('ar-SA')} ${t('common.currency')}`}
         accent="purple"
         action={
           <div className="flex gap-1 items-center flex-wrap">
@@ -134,7 +136,7 @@ export default function ExpensesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-right">
-                {['التاريخ', 'الفئة', 'الوصف', 'المزرعة', 'المبلغ', 'متكرر', 'الحالة'].map((h) => (
+                {[t('common.date'), t('expenses.category'), t('expenses.description'), t('common.farm'), t('expenses.amount'), t('expenses.recurring'), t('common.status')].map((h) => (
                   <th key={h} className="pb-3 pr-3 text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -150,7 +152,7 @@ export default function ExpensesPage() {
                   </td>
                   <td className="py-3 pr-3 text-gray-700 max-w-[200px] truncate">{e.desc}</td>
                   <td className="py-3 pr-3 text-xs text-gray-400 whitespace-nowrap">{e.farm}</td>
-                  <td className="py-3 pr-3 font-bold text-red-600 whitespace-nowrap">{e.amount.toLocaleString('ar-SA')} ريال</td>
+                  <td className="py-3 pr-3 font-bold text-red-600 whitespace-nowrap">{e.amount.toLocaleString('ar-SA')} {t('common.currency')}</td>
                   <td className="py-3 pr-3 text-center whitespace-nowrap">
                     {e.recurring ? <span className="text-green-500">🔁</span> : <span className="text-gray-300">—</span>}
                   </td>
@@ -161,7 +163,7 @@ export default function ExpensesPage() {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && <p className="text-center text-gray-400 text-sm py-8">لا توجد نتائج</p>}
+          {filtered.length === 0 && <p className="text-center text-gray-400 text-sm py-8">{t('common.noResults')}</p>}
         </div>
       </GlassCard>
     </PageContainer>
