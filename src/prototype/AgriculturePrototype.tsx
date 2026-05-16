@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LangProvider, useLang } from './contexts/LangContext';
+import { api, saveTokens } from '../api';
 import AppLayout from './components/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import GrowingCyclePage from './pages/GrowingCyclePage';
@@ -41,13 +42,24 @@ const PLACEHOLDERS: Record<string, { title: string; icon: string; desc: string }
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const { t, lang, setLang, dir } = useLang();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('admin@hasad.sa');
+  const [email, setEmail] = useState('admin@wazan.com');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); onLogin(); }, 1000);
+    setError('');
+    try {
+      const data = await api.login(email, password);
+      saveTokens(data.access, data.refresh);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      onLogin();
+    } catch {
+      setError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,6 +135,12 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               <input type="checkbox" id="remember" defaultChecked className="w-4 h-4 rounded accent-green-600 cursor-pointer" />
               <label htmlFor="remember" className="text-xs text-gray-500 cursor-pointer">{t('login.remember')}</label>
             </div>
+
+            {error && (
+              <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center">
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
