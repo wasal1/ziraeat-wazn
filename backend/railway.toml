@@ -1,0 +1,8 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "python manage.py migrate && gunicorn wazan.wsgi --log-file -"
+healthcheckPath = "/api/v1/auth/login/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"

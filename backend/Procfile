@@ -1,0 +1,1 @@
+web: gunicorn wazan.wsgi --log-file -
