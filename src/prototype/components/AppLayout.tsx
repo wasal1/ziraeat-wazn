@@ -1,6 +1,7 @@
 import { type ReactNode, useState } from 'react';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import { useLang } from '../contexts/LangContext';
 
 interface Props {
   current: string;
@@ -9,8 +10,10 @@ interface Props {
 }
 
 export default function AppLayout({ current, onNav, children }: Props) {
+  const { dir } = useLang();
   const [collapsed, setCollapsed]   = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isRtl = dir === 'rtl';
 
   const handleNav = (page: string) => {
     setMobileOpen(false);
@@ -25,8 +28,13 @@ export default function AppLayout({ current, onNav, children }: Props) {
     }
   };
 
+  // Sidebar width margin applied to the correct side based on direction
+  const contentMargin = collapsed
+    ? (isRtl ? 'md:mr-[68px]' : 'md:ml-[68px]')
+    : (isRtl ? 'md:mr-[260px]' : 'md:ml-[260px]');
+
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #f0f9ff 100%)' }}>
+    <div dir={dir} className="min-h-screen" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #f0f9ff 100%)' }}>
 
       {/* Mobile backdrop */}
       {mobileOpen && (
@@ -38,8 +46,8 @@ export default function AppLayout({ current, onNav, children }: Props) {
 
       <Sidebar current={current} onNav={handleNav} collapsed={collapsed} mobileOpen={mobileOpen} />
 
-      {/* Content — no margin on mobile, sidebar-width margin on md+ */}
-      <div className={`transition-all duration-300 min-h-screen flex flex-col ${collapsed ? 'md:mr-[68px]' : 'md:mr-[260px]'}`}>
+      {/* Content area — margin side flips with language direction */}
+      <div className={`transition-all duration-300 min-h-screen flex flex-col ${contentMargin}`}>
         <Topbar current={current} onToggle={handleToggle} />
         <main className="flex-1 p-3 sm:p-4 md:p-6">
           {children}

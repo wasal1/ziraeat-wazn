@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LangProvider, useLang } from './contexts/LangContext';
 import AppLayout from './components/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import GrowingCyclePage from './pages/GrowingCyclePage';
@@ -38,6 +39,7 @@ const PLACEHOLDERS: Record<string, { title: string; icon: string; desc: string }
 
 // ─── Login Screen ────────────────────────────────────────
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  const { t, lang, setLang, dir } = useLang();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('admin@hasad.sa');
   const [password, setPassword] = useState('');
@@ -51,7 +53,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   return (
     <div
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      dir="rtl"
+      dir={dir}
       style={{ background: 'linear-gradient(135deg, #052e16 0%, #14532d 35%, #166534 65%, #052e16 100%)' }}
     >
       {/* Background elements */}
@@ -61,9 +63,18 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
         <div className="absolute top-1/3 left-1/4 text-[120px] opacity-5 select-none">🌾</div>
         <div className="absolute bottom-12 right-16 text-[100px] opacity-5 select-none">🌴</div>
         <div className="absolute top-10 left-8 text-[80px] opacity-5 select-none">🌱</div>
-        {/* Grid pattern */}
         <div className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'repeating-linear-gradient(0deg, white, white 1px, transparent 1px, transparent 50px), repeating-linear-gradient(90deg, white, white 1px, transparent 1px, transparent 50px)' }} />
+      </div>
+
+      {/* Language toggle */}
+      <div className="absolute top-5 left-5 z-10">
+        <button
+          onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+          className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 border border-white/20 rounded-full text-white text-xs font-semibold backdrop-blur-sm transition-all"
+        >
+          🌐 {lang === 'ar' ? 'English' : 'العربية'}
+        </button>
       </div>
 
       <div className="relative z-10 w-full max-w-[420px] mx-4">
@@ -76,13 +87,13 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               <span className="text-3xl">🌾</span>
             </div>
             <h1 className="text-2xl font-extrabold text-gray-800 mb-1">{PLATFORM.name}</h1>
-            <p className="text-[11px] text-gray-400 leading-relaxed max-w-[260px] mx-auto">{PLATFORM.tagline}</p>
+            <p className="text-[11px] text-gray-400 leading-relaxed max-w-[260px] mx-auto">{t('login.systemTag')}</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="px-8 py-7 space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">البريد الإلكتروني</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('login.email')}</label>
               <div className="relative">
                 <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">📧</span>
                 <input
@@ -95,8 +106,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold text-gray-600">كلمة المرور</label>
-                <button type="button" className="text-[11px] text-green-600 hover:text-green-800 font-medium">نسيت كلمة المرور؟</button>
+                <label className="text-xs font-semibold text-gray-600">{t('login.password')}</label>
+                <button type="button" className="text-[11px] text-green-600 hover:text-green-800 font-medium">{t('login.forgot')}</button>
               </div>
               <div className="relative">
                 <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔒</span>
@@ -110,7 +121,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
             <div className="flex items-center gap-2">
               <input type="checkbox" id="remember" defaultChecked className="w-4 h-4 rounded accent-green-600 cursor-pointer" />
-              <label htmlFor="remember" className="text-xs text-gray-500 cursor-pointer">تذكرني</label>
+              <label htmlFor="remember" className="text-xs text-gray-500 cursor-pointer">{t('login.remember')}</label>
             </div>
 
             <button
@@ -124,21 +135,21 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  جارٍ الدخول...
+                  {t('login.loading')}
                 </>
-              ) : 'تسجيل الدخول'}
+              ) : t('login.submit')}
             </button>
           </form>
 
           {/* Footer */}
           <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 text-center">
-            <p className="text-[10px] text-gray-400">{PLATFORM.name} © 2026 — جميع الحقوق محفوظة</p>
+            <p className="text-[10px] text-gray-400">{PLATFORM.name} © 2026 — {t('login.rights')}</p>
           </div>
         </div>
 
         {/* Feature pills */}
         <div className="flex justify-center gap-3 mt-5">
-          {['🔒 آمن 100%', '📱 متجاوب', '🌐 RTL عربي'].map((f) => (
+          {[t('login.pill1'), t('login.pill2'), t('login.pill3')].map((f) => (
             <span key={f} className="text-[11px] text-green-200/80 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
               {f}
             </span>
@@ -193,7 +204,7 @@ function PageContent({ page, onNav }: { page: string; onNav: (p: string) => void
 }
 
 // ─── Root ────────────────────────────────────────────────
-export default function AgriculturePrototype() {
+function AppRoot() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [page, setPage] = useState('dashboard');
 
@@ -203,5 +214,13 @@ export default function AgriculturePrototype() {
     <AppLayout current={page} onNav={setPage}>
       <PageContent page={page} onNav={setPage} />
     </AppLayout>
+  );
+}
+
+export default function AgriculturePrototype() {
+  return (
+    <LangProvider>
+      <AppRoot />
+    </LangProvider>
   );
 }

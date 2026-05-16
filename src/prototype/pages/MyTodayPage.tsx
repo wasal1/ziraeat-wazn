@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PageContainer from '../components/PageContainer';
 import GlassCard from '../components/GlassCard';
 import SectionHeader from '../components/SectionHeader';
+import { useLang } from '../contexts/LangContext';
 import {
   myTodayRoles, fullStatusConfig, myTodayData, taskTypeConfig,
   dailyOperations, dailyOpStats, opTypeConfig,
@@ -13,9 +14,6 @@ const PRIORITY_STYLE: Record<string, string> = {
   high:   'bg-red-100 text-red-700',
   medium: 'bg-amber-100 text-amber-700',
   low:    'bg-gray-100 text-gray-500',
-};
-const PRIORITY_LABEL: Record<string, string> = {
-  high: 'عالية', medium: 'متوسطة', low: 'منخفضة',
 };
 
 // ─── Daily ops lookups (for farmops view) ─────────────────
@@ -55,6 +53,7 @@ const LIFECYCLE = [
 
 // ─── Task row component ───────────────────────────────────
 function TaskRow({ task, onNav }: { task: MyTask; onNav: (p: string) => void }) {
+  const { t } = useLang();
   const cfg  = taskTypeConfig[task.type] ?? { label: task.type, icon: '📌' };
   const sCfg = fullStatusConfig[task.status];
   const isLate      = task.status === 'late';
@@ -64,45 +63,40 @@ function TaskRow({ task, onNav }: { task: MyTask; onNav: (p: string) => void }) 
   return (
     <div className={`px-4 py-3 md:px-5 md:py-4 transition-colors ${isLate ? 'bg-red-50/40' : isMustDoNow ? 'bg-orange-50/40' : 'hover:bg-gray-50/50'}`}>
       <div className="flex items-start gap-3">
-        {/* Type icon */}
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 ${isLate ? 'bg-red-100' : isMustDoNow ? 'bg-orange-100' : isDone ? 'bg-green-50' : 'bg-gray-50'}`}>
           {cfg.icon}
         </div>
 
         <div className="flex-1 min-w-0">
-          {/* Title + badges */}
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className={`font-semibold text-sm ${isDone ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
               {task.title}
             </span>
             {sCfg && (
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${sCfg.style}`}>
-                {sCfg.icon} {sCfg.label}
+                {sCfg.icon} {t(`taskStatus.${task.status}`) || sCfg.label}
               </span>
             )}
             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${PRIORITY_STYLE[task.priority]}`}>
-              {PRIORITY_LABEL[task.priority]}
+              {t(`priority.${task.priority}`)}
             </span>
           </div>
 
-          {/* Meta */}
           <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[12px] text-gray-500">
             <span>📍 {task.field}</span>
             <span>👤 {task.assignedTo}</span>
             <span>🕐 {task.scheduledTime}</span>
             {task.estimatedCost !== undefined && (
-              <span className="text-green-700 font-medium">💸 {task.estimatedCost.toLocaleString()} ر.س</span>
+              <span className="text-green-700 font-medium">💸 {task.estimatedCost.toLocaleString()} {t('common.currency')}</span>
             )}
           </div>
 
-          {/* My role chip */}
           {task.myRole && (
             <span className="inline-block mt-1.5 text-[11px] bg-green-50 text-green-700 border border-green-100 px-2.5 py-0.5 rounded-full">
-              دورك: {task.myRole}
+              {t('mytoday.myRole')} {task.myRole}
             </span>
           )}
 
-          {/* Waiting action */}
           {task.waitingAction && (
             <div className="mt-2 flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
               <span className="text-amber-600 text-sm">⚡</span>
@@ -110,18 +104,16 @@ function TaskRow({ task, onNav }: { task: MyTask; onNav: (p: string) => void }) 
             </div>
           )}
 
-          {/* Notes */}
           {task.notes && !isDone && (
             <p className="mt-1 text-[12px] text-gray-400 truncate">{task.notes}</p>
           )}
         </div>
 
-        {/* Detail button */}
         <button
           onClick={() => onNav('taskdetail')}
           className="flex-shrink-0 text-[11px] font-medium text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 px-2.5 py-1.5 rounded-lg transition-colors whitespace-nowrap"
         >
-          التفاصيل ←
+          {t('common.details')}
         </button>
       </div>
     </div>
@@ -132,6 +124,7 @@ function TaskRow({ task, onNav }: { task: MyTask; onNav: (p: string) => void }) 
 interface Props { onNav: (p: string) => void; }
 
 export default function MyTodayPage({ onNav }: Props) {
+  const { t } = useLang();
   const [roleId, setRoleId]             = useState<MyTodayRoleId>('manager');
   const [statusFilter, setStatusFilter] = useState('all');
   const [view, setView]                 = useState<'mywork' | 'farmops'>('mywork');
@@ -144,7 +137,6 @@ export default function MyTodayPage({ onNav }: Props) {
     if (!SUPERVISORY_ROLES.has(id)) setView('mywork');
   };
 
-  const role          = myTodayRoles.find((r) => r.id === roleId)!;
   const { summary, tasks } = myTodayData[roleId];
 
   const urgentTask   = tasks.find((t) => t.status === 'mustDoNow') ?? tasks.find((t) => t.status === 'late');
@@ -171,8 +163,8 @@ export default function MyTodayPage({ onNav }: Props) {
   return (
     <PageContainer>
       <SectionHeader
-        title="عملي اليوم"
-        subtitle="مهامك ومسؤولياتك لهذا اليوم — محدَّثة حسب دورك ووضع كل مهمة"
+        title={t('page.mytoday.title')}
+        subtitle={t('page.mytoday.sub')}
       />
 
       {/* ─── Role selector ─── */}
@@ -190,7 +182,7 @@ export default function MyTodayPage({ onNav }: Props) {
                 }`}
             >
               <span>{r.icon}</span>
-              <span>{r.label}</span>
+              <span>{t(`role.${r.id}`)}</span>
             </button>
           );
         })}
@@ -204,14 +196,14 @@ export default function MyTodayPage({ onNav }: Props) {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all
               ${view === 'mywork' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
-            🎯 مهامي
+            {t('mytoday.viewMyWork')}
           </button>
           <button
             onClick={() => setView('farmops')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all
               ${view === 'farmops' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
-            📋 إشراف ميداني
+            {t('mytoday.viewFarmOps')}
           </button>
         </div>
       )}
@@ -222,12 +214,12 @@ export default function MyTodayPage({ onNav }: Props) {
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { label: 'الإجمالي اليوم',  value: dailyOpStats.totalToday,                           icon: '📋', color: 'text-gray-700'   },
-              { label: 'منجزة',            value: dailyOpStats.completed,                            icon: '✅', color: 'text-green-600'  },
-              { label: 'جارية',            value: dailyOpStats.inProgress,                           icon: '⏳', color: 'text-blue-600'   },
-              { label: 'مجدولة',           value: dailyOpStats.scheduled,                            icon: '🗓️', color: 'text-amber-600'  },
-              { label: 'التكلفة اليومية', value: `${dailyOpStats.totalCost.toLocaleString()} ر.س`,  icon: '💸', color: 'text-purple-600' },
-              { label: 'وفر عن المعدل',   value: `${dailyOpStats.savedVsAvg.toLocaleString()} ر.س`, icon: '💰', color: 'text-emerald-600'},
+              { label: t('farmops.totalToday'),  value: dailyOpStats.totalToday,                                              icon: '📋', color: 'text-gray-700'   },
+              { label: t('farmops.completed'),   value: dailyOpStats.completed,                                               icon: '✅', color: 'text-green-600'  },
+              { label: t('farmops.inProgress'),  value: dailyOpStats.inProgress,                                              icon: '⏳', color: 'text-blue-600'   },
+              { label: t('farmops.scheduled'),   value: dailyOpStats.scheduled,                                               icon: '🗓️', color: 'text-amber-600'  },
+              { label: t('farmops.dailyCost'),   value: `${dailyOpStats.totalCost.toLocaleString()} ${t('common.currency')}`, icon: '💸', color: 'text-purple-600' },
+              { label: t('farmops.savedVsAvg'),  value: `${dailyOpStats.savedVsAvg.toLocaleString()} ${t('common.currency')}`,icon: '💰', color: 'text-emerald-600'},
             ].map((s) => (
               <GlassCard key={s.label} className="text-center">
                 <p className="text-2xl mb-1">{s.icon}</p>
@@ -243,7 +235,7 @@ export default function MyTodayPage({ onNav }: Props) {
               <input
                 value={opsSearch}
                 onChange={(e) => setOpsSearch(e.target.value)}
-                placeholder="بحث في العمليات..."
+                placeholder={t('farmops.searchPlaceholder')}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
               />
               <div className="flex gap-2 flex-wrap">
@@ -253,7 +245,7 @@ export default function MyTodayPage({ onNav }: Props) {
                     onClick={() => setOpsFilter(s)}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${opsFilter === s ? 'bg-green-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                   >
-                    {s === 'all' ? 'الكل' : OPS_STATUS_LABEL[s]}
+                    {s === 'all' ? t('common.all') : t(`status.${s}`)}
                   </button>
                 ))}
               </div>
@@ -261,7 +253,7 @@ export default function MyTodayPage({ onNav }: Props) {
           </GlassCard>
 
           {/* Operations list */}
-          <GlassCard title={`العمليات (${filteredOps.length})`} noPadding>
+          <GlassCard title={`${t('farmops.opsCount')} (${filteredOps.length})`} noPadding>
             <div className="divide-y divide-gray-100/80">
               {filteredOps.map((op) => {
                 const cfg = opTypeConfig[op.type] ?? { label: op.type, icon: '📌' };
@@ -291,14 +283,14 @@ export default function MyTodayPage({ onNav }: Props) {
                         )}
                       </div>
                       <div className="flex-shrink-0 text-left text-[12px] text-gray-500 space-y-1">
-                        <p className="font-semibold text-green-700">{op.cost.toLocaleString()} ر.س</p>
+                        <p className="font-semibold text-green-700">{op.cost.toLocaleString()} {t('common.currency')}</p>
                         <p>{op.startTime}</p>
                         <p className="text-gray-400">{op.duration}</p>
                         <button
                           onClick={() => onNav('taskdetail')}
                           className="mt-1 text-[11px] font-medium text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors"
                         >
-                          عرض التفاصيل ←
+                          {t('farmops.viewDetails')}
                         </button>
                       </div>
                     </div>
@@ -308,7 +300,7 @@ export default function MyTodayPage({ onNav }: Props) {
               {filteredOps.length === 0 && (
                 <div className="py-16 text-center text-gray-400">
                   <p className="text-4xl mb-3">📋</p>
-                  <p className="text-sm">لا توجد عمليات مطابقة</p>
+                  <p className="text-sm">{t('farmops.noOps')}</p>
                 </div>
               )}
             </div>
@@ -323,11 +315,11 @@ export default function MyTodayPage({ onNav }: Props) {
       {/* ─── Stats ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
-          { label: 'الإجمالي اليوم',  value: summary.total,   icon: '📋', color: 'text-gray-700'   },
-          { label: 'مكتملة',          value: summary.done,    icon: '✅', color: 'text-green-600'  },
-          { label: 'عاجلة / حرجة',    value: summary.urgent,  icon: '🚨', color: 'text-red-600'    },
-          { label: 'متأخرة',          value: summary.late,    icon: '⏰', color: 'text-amber-600'  },
-          { label: 'بانتظار إجراء',   value: summary.waiting, icon: '⏳', color: 'text-purple-600' },
+          { label: t('mytoday.totalToday'), value: summary.total,   icon: '📋', color: 'text-gray-700'   },
+          { label: t('mytoday.completed'),  value: summary.done,    icon: '✅', color: 'text-green-600'  },
+          { label: t('mytoday.urgent'),     value: summary.urgent,  icon: '🚨', color: 'text-red-600'    },
+          { label: t('mytoday.late'),       value: summary.late,    icon: '⏰', color: 'text-amber-600'  },
+          { label: t('mytoday.waiting'),    value: summary.waiting, icon: '⏳', color: 'text-purple-600' },
         ].map((s) => (
           <GlassCard key={s.label} className="text-center">
             <p className="text-xl mb-0.5">{s.icon}</p>
@@ -340,7 +332,9 @@ export default function MyTodayPage({ onNav }: Props) {
       {/* ─── Progress bar ─── */}
       <GlassCard>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-gray-700">نسبة إنجاز {role.label} اليوم</span>
+          <span className="text-sm font-semibold text-gray-700">
+            {t('mytoday.progressOf')} {t(`role.${roleId}`)} {t('mytoday.progressDay')}
+          </span>
           <span className="text-sm font-bold text-green-700">{donePct}%</span>
         </div>
         <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -350,8 +344,8 @@ export default function MyTodayPage({ onNav }: Props) {
           />
         </div>
         <div className="flex justify-between text-[11px] text-gray-400 mt-1.5">
-          <span>{summary.done} مهمة مكتملة</span>
-          <span>{summary.total - summary.done} متبقية من {summary.total}</span>
+          <span>{summary.done} {t('mytoday.tasksDone')}</span>
+          <span>{summary.total - summary.done} {t('mytoday.tasksLeft')} {summary.total}</span>
         </div>
       </GlassCard>
 
@@ -365,7 +359,7 @@ export default function MyTodayPage({ onNav }: Props) {
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs bg-red-500 text-white px-3 py-1 rounded-full font-bold animate-pulse">
-                🚨 يجب تنفيذها الآن
+                {t('mytoday.mustDoNow')}
               </span>
             </div>
             <div className="flex items-start gap-3 mb-4">
@@ -378,7 +372,7 @@ export default function MyTodayPage({ onNav }: Props) {
             </div>
             {currentWorkerTask.notes && (
               <div className="bg-white/20 rounded-2xl p-4 mb-4 border border-white/30">
-                <p className="text-xs font-bold text-white/80 mb-1.5">التعليمات:</p>
+                <p className="text-xs font-bold text-white/80 mb-1.5">{t('mytoday.instructions')}</p>
                 <p className="text-sm text-white/90 leading-relaxed">{currentWorkerTask.notes}</p>
               </div>
             )}
@@ -387,16 +381,16 @@ export default function MyTodayPage({ onNav }: Props) {
                 onClick={() => onNav('taskdetail')}
                 className="flex-1 py-3 bg-white text-green-700 font-bold rounded-xl hover:bg-green-50 transition-colors text-sm"
               >
-                ▶️ بدء التنفيذ
+                {t('mytoday.startWork')}
               </button>
               <button className="px-4 py-3 bg-white/20 border border-white/30 text-white rounded-xl text-sm font-medium hover:bg-white/30 transition-colors">
-                📎 رفع صورة
+                {t('mytoday.uploadPhoto')}
               </button>
               <button
                 onClick={() => onNav('taskdetail')}
                 className="px-4 py-3 bg-white/20 border border-white/30 text-white rounded-xl text-sm font-medium hover:bg-white/30 transition-colors"
               >
-                💬 محادثة المهمة
+                {t('mytoday.taskChat')}
               </button>
             </div>
           </div>
@@ -412,7 +406,7 @@ export default function MyTodayPage({ onNav }: Props) {
           />
           <div className="relative z-10">
             <p className="text-[11px] font-bold text-white/80 uppercase tracking-widest mb-3">
-              {urgentTask.status === 'mustDoNow' ? '🚨 يجب تنفيذها الآن' : '⏰ متأخرة — تحتاج تدخلاً فورياً'}
+              {urgentTask.status === 'mustDoNow' ? t('mytoday.mustDoNow') : t('mytoday.lateAlert')}
             </p>
             <div className="flex items-start gap-3">
               <span className="text-4xl">{taskTypeConfig[urgentTask.type]?.icon ?? '📌'}</span>
@@ -430,7 +424,7 @@ export default function MyTodayPage({ onNav }: Props) {
                 onClick={() => onNav('taskdetail')}
                 className="flex-shrink-0 px-4 py-2 bg-white text-red-700 font-bold rounded-xl text-sm hover:bg-red-50 transition-colors whitespace-nowrap"
               >
-                عرض ←
+                {t('common.view')}
               </button>
             </div>
           </div>
@@ -444,7 +438,7 @@ export default function MyTodayPage({ onNav }: Props) {
         <GlassCard accent="purple" className="flex flex-col">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">⏳</span>
-            <p className="font-bold text-gray-800 text-sm">بانتظار إجراءك</p>
+            <p className="font-bold text-gray-800 text-sm">{t('mytoday.waitingFor')}</p>
             <span className={`mr-auto text-xs font-bold px-2 py-0.5 rounded-full ${waitingTasks.length > 0 ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
               {waitingTasks.length}
             </span>
@@ -452,7 +446,7 @@ export default function MyTodayPage({ onNav }: Props) {
           {waitingTasks.length === 0 ? (
             <div className="flex flex-col items-center py-4 gap-1">
               <span className="text-2xl">✅</span>
-              <p className="text-[12px] text-green-600 font-medium">لا يوجد مهام بانتظارك</p>
+              <p className="text-[12px] text-green-600 font-medium">{t('mytoday.noWaiting')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -477,7 +471,7 @@ export default function MyTodayPage({ onNav }: Props) {
         <GlassCard accent="sky" className="flex flex-col">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">🗓️</span>
-            <p className="font-bold text-gray-800 text-sm">المهمة التالية</p>
+            <p className="font-bold text-gray-800 text-sm">{t('mytoday.nextTask')}</p>
           </div>
           {nextTask ? (
             <button
@@ -494,7 +488,7 @@ export default function MyTodayPage({ onNav }: Props) {
               </div>
             </button>
           ) : (
-            <p className="text-[12px] text-gray-400 text-center py-4">لا توجد مهام مجدولة قادمة</p>
+            <p className="text-[12px] text-gray-400 text-center py-4">{t('mytoday.noNext')}</p>
           )}
         </GlassCard>
 
@@ -502,7 +496,7 @@ export default function MyTodayPage({ onNav }: Props) {
         <GlassCard accent="red" className="flex flex-col">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">⏰</span>
-            <p className="font-bold text-gray-800 text-sm">المتأخرة</p>
+            <p className="font-bold text-gray-800 text-sm">{t('mytoday.lateTitle')}</p>
             <span className={`mr-auto text-xs font-bold px-2 py-0.5 rounded-full ${lateTasks.length > 0 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'}`}>
               {lateTasks.length}
             </span>
@@ -510,7 +504,7 @@ export default function MyTodayPage({ onNav }: Props) {
           {lateTasks.length === 0 ? (
             <div className="flex flex-col items-center py-4 gap-1">
               <span className="text-2xl">✅</span>
-              <p className="text-[12px] text-green-600 font-medium">ممتاز — لا توجد تأخيرات</p>
+              <p className="text-[12px] text-green-600 font-medium">{t('mytoday.noLate')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -533,8 +527,8 @@ export default function MyTodayPage({ onNav }: Props) {
 
       {/* ─── Full task list ─── */}
       <GlassCard
-        title={`جميع مهام ${role.label} اليوم`}
-        subtitle={`${tasks.length} مهمة — ${summary.done} مكتملة`}
+        title={`${t('mytoday.allTasks')} ${t(`role.${roleId}`)} ${t('mytoday.allTasksDay')}`}
+        subtitle={`${tasks.length} — ${summary.done} ${t('mytoday.completed')}`}
         noPadding
       >
         {/* Status filter */}
@@ -544,7 +538,7 @@ export default function MyTodayPage({ onNav }: Props) {
             className={`text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap flex-shrink-0 transition-all
               ${statusFilter === 'all' ? 'bg-green-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
-            الكل ({tasks.length})
+            {t('common.all')} ({tasks.length})
           </button>
           {presentStatuses.map((s) => {
             const sCfg = fullStatusConfig[s];
@@ -557,7 +551,7 @@ export default function MyTodayPage({ onNav }: Props) {
                 className={`text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap flex-shrink-0 transition-all
                   ${statusFilter === s ? 'bg-green-600 text-white shadow' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
-                {sCfg.icon} {sCfg.label} ({count})
+                {sCfg.icon} {t(`taskStatus.${s}`) || sCfg.label} ({count})
               </button>
             );
           })}
@@ -571,7 +565,7 @@ export default function MyTodayPage({ onNav }: Props) {
           {filtered.length === 0 && (
             <div className="py-14 text-center text-gray-400">
               <p className="text-4xl mb-3">📋</p>
-              <p className="text-sm">لا توجد مهام بهذا الفلتر</p>
+              <p className="text-sm">{t('mytoday.noFilter')}</p>
             </div>
           )}
         </div>
@@ -582,10 +576,8 @@ export default function MyTodayPage({ onNav }: Props) {
         <div className="flex items-start gap-3 mb-5">
           <span className="text-3xl">💡</span>
           <div>
-            <h3 className="font-bold text-gray-800 text-[15px]">كيف تقلل هذه الميزة النفقات؟</h3>
-            <p className="text-[12px] text-gray-400 mt-0.5">
-              كل شخص يعرف المطلوب منه في الوقت المناسب — بلا ضياع ولا تكرار ولا نزاعات
-            </p>
+            <h3 className="font-bold text-gray-800 text-[15px]">{t('mytoday.valueTitle')}</h3>
+            <p className="text-[12px] text-gray-400 mt-0.5">{t('mytoday.valueSub')}</p>
           </div>
         </div>
 
@@ -601,7 +593,7 @@ export default function MyTodayPage({ onNav }: Props) {
         {/* Lifecycle flow */}
         <div className="border-t border-amber-100 pt-5">
           <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">
-            دورة حياة المهمة — من الإنشاء إلى السجل الزراعي
+            {t('mytoday.lifecycle')}
           </p>
           <div className="flex items-start gap-1 flex-wrap">
             {LIFECYCLE.map(([icon, label], i) => (
