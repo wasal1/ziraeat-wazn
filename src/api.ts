@@ -4,9 +4,9 @@ function getToken() {
   return localStorage.getItem('access_token');
 }
 
-export function saveTokens(access: string, refresh: string) {
-  localStorage.setItem('access_token', access);
-  localStorage.setItem('refresh_token', refresh);
+export function saveTokens(tokens: { access: string; refresh: string }) {
+  localStorage.setItem('access_token', tokens.access);
+  localStorage.setItem('refresh_token', tokens.refresh);
 }
 
 export function clearTokens() {

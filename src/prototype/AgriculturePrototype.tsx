@@ -52,7 +52,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
     setError('');
     try {
       const data = await api.login(email, password);
-      saveTokens(data.access, data.refresh);
+      saveTokens(data.tokens);
       localStorage.setItem('user', JSON.stringify(data.user));
       onLogin();
     } catch {
